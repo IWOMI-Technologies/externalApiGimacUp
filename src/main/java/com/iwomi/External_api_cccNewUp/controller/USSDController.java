@@ -363,7 +363,8 @@ public class USSDController
     
     public String getPhone(final String phone) {
         if (phone.startsWith("+237")) {
-            return phone.replaceFirst("+237", "");
+           // return phone.replaceFirst("+237", "");
+            return phone.replaceFirst("237", "");
         }
         if (phone.startsWith("237")) {
             return phone.replaceFirst("237", "");
