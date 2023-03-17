@@ -33,7 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author user
  */
 @RestController
-@CrossOrigin()
+//@CrossOrigin()
+@RequestMapping("${apiPrefix}")
 public class ConfigController {
 
     @Autowired
