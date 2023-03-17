@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @author user
  */
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 public class IWOMIPAYController {
     
     @Autowired
