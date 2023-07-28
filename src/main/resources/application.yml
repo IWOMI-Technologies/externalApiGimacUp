@@ -18,7 +18,7 @@ eureka:
 
 spring:
   application:
-    name: externalapi
+    name: external-api
 
 #logging:
 #  level:
