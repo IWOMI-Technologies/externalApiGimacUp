@@ -6,13 +6,6 @@ package com.iwomi.External_api_cccNewUp.ussd.utils;
 
 import com.iwomi.External_api_cccNewUp.model.responses;
 import com.iwomi.External_api_cccNewUp.ussd.config.TemplatesUSSD;
-import jakarta.xml.soap.MessageFactory;
-import jakarta.xml.soap.MimeHeaders;
-import jakarta.xml.soap.SOAPConnection;
-import jakarta.xml.soap.SOAPConnectionFactory;
-import jakarta.xml.soap.SOAPException;
-import jakarta.xml.soap.SOAPMessage;
-import jakarta.xml.soap.SOAPPart;
 import jakarta.xml.soap.*;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

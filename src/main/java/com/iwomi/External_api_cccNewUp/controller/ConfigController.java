@@ -397,7 +397,7 @@ public class ConfigController {
         String valen = payload.get("valen");
         String valfr = payload.get("valfr");
         
-        Ussdfirstpage menu = ussdfirstpageRepository.findById(Integer.parseInt(id)).orElse(null);
+        Ussdfirstpage menu = ussdfirstpageRepository.findById(Integer.valueOf(id)).orElse(null);
         if(menu != null ){
             menu.setActive(active);
             menu.setValen(valen);
@@ -406,6 +406,34 @@ public class ConfigController {
             
             response.put("status","01" );
             response.put("message", "Successfully configured");
+            return response;
+            
+        }
+        
+        response.put("status","02" );
+        response.put("message", "Menu Item not found in our system");
+        
+        return response;
+    }
+    
+     @RequestMapping(value = "/getMenuItembyId", method = RequestMethod.POST)
+    public Map<String, Object> getMenuItembyId(@RequestBody Map<String, String> payload){
+        Map<String, Object> response = new HashMap();
+        String id = payload.get("id");
+//        String active = payload.get("active"); //1 = active 0 = desactivated
+//        String valen = payload.get("valen");
+//        String valfr = payload.get("valfr");
+        
+        Ussdfirstpage menu = ussdfirstpageRepository.findById(Integer.valueOf(id)).orElse(null);
+        if(menu != null ){
+//            menu.setActive(active);
+//            menu.setValen(valen);
+//            menu.setValfr(valfr);
+//            ussdfirstpageRepository.save(menu);
+//            
+            response.put("status","01" );
+            response.put("data",menu);
+            response.put("message", "Successfully ");
             return response;
             
         }

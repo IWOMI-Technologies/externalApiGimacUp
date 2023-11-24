@@ -30,9 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Properties;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -43,12 +41,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import static org.apache.commons.lang3.StringUtils.trim;
 import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -207,63 +201,161 @@ public class MomoOperationsController {
             return null;
         }
     }
-
-    @RequestMapping(value = "/sendEmail", method = RequestMethod.POST)
-    public Map<String, Object> sendEmail(@RequestBody Map<String, String> payload) {
-        Map<String, Object> response = new HashMap();
-        Pwd pwd = pwdRepository.findByAcscd("0214", "0");
-        byte[] decoder = Base64.getDecoder().decode(trim(pwd.getPass().toString()));
-        String v = new String(decoder);
-        final String mail_Server = trim(pwd.getLib1());
-        final String user = trim(pwd.getLogin());
-        final String pass = trim(v);
-        final String port = pwd.getLib2();
-
-        String msg = payload.get("msg");
-        String title = payload.get("obj");
+    
+   // public JSONObject  sendEmailApi( String email, String sms, String obj)
+        @RequestMapping(value = "/sendEmail1", method = RequestMethod.POST)
+    public Map<String, Object> sendEmail(@RequestBody Map<String, String> payload)
+     {
+        String sms = payload.get("msg");
+       String obj = payload.get("obj");
         String email = payload.get("ema");
+         Map<String, Object> response = new HashMap();
+        String to = email;
+        Pwd pwd = pwdRepository.findByAcscd("0214", "0");
+        byte[] decoder = Base64.getDecoder().decode(pwd.getPass());
+        String v = new String(decoder);
+        final String mail_Server = pwd.getLib1();
+        final String user = pwd.getLogin();
+        final String pass = v;
+        final String port = pwd.getLib2();
+        // change accordingly 
+        String from = user;
 
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", mail_Server);
-        prop.put("mail.smtp.socketFactory.class",
-                "javax.net.ssl.SSLSocketFactory");
-        prop.put("mail.smtp.ssl.trust", "*");
-        prop.put("mail.smtp.port", port);
-        prop.put("mail.smtp.auth", "true");
-//        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+        // or IP address 
+        //String host = "smtp.cccplc.net";
+          String host = mail_Server;
 
-        Session session = Session.getInstance(prop,
+        // mail id 
+        final String username1 = "no_reply.mail@firsttrust.cm";
+
+        // correct password for gmail id 
+        final String password1 = pass;
+
+        System.out.println("TLSEmail Start");
+        // Get the session object 
+
+        // Get system properties 
+        Properties properties = System.getProperties();
+
+        // Setup mail server 
+        properties.setProperty("mail.smtp.host", host);
+
+        // SSL Port 
+        properties.put("mail.smtp.port", port);
+
+        // enable authentication 
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+
+        // SSL Factory 
+       // properties.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
+        properties.put("mail.smtp.ssl.trust", "*");
+         properties.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        // creating Session instance referenced to  
+        // Authenticator object to pass in  
+        // Session.getInstance argument 
+         Session session = Session.getInstance(properties,
                 new javax.mail.Authenticator() {
                     @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, pass);
+                        return new PasswordAuthentication(username1, password1);
                     }
                 });
-
+     String st="Fail";
+        //compose the message 
         try {
+            // javax.mail.internet.MimeMessage class is mostly  
+            // used for abstraction. 
+            MimeMessage message = new MimeMessage(session);
 
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(user));
-            message.setRecipients(
-                    Message.RecipientType.TO,
-                    InternetAddress.parse(email)
-            );
-            message.setSubject(title);
-            message.setText(msg);
+            // header field of the header. 
+            message.setFrom(new InternetAddress(from));
 
+            message.addRecipient(Message.RecipientType.TO,
+                    new InternetAddress(to));
+            message.setSubject(obj);
+            message.setText(sms);
+
+            // Send message 
             Transport.send(message);
-            response.put("'success", "01");
+             response.put("'success", "01");
             response.put("message", "message successfully send");
-            response.put("data", payload);
-            System.out.println("Done");
-        } catch (MessagingException e) {
-            response.put("'success", "100");
+          //  response.put("data", "");
+            System.out.println("Yo it has been sent..");
+        } catch (MessagingException mex) {
+             response.put("'success", "100");
             response.put("message", "message not send, please try again later");
-            response.put("data", payload);
-            e.printStackTrace();
+           // response.put("data", payload);
+            mex.printStackTrace();
         }
         return response;
     }
+
+//    @RequestMapping(value = "/sendEmail", method = RequestMethod.POST)
+//    public Map<String, Object> sendEmail(@RequestBody Map<String, String> payload) {
+//        Map<String, Object> response = new HashMap();
+////        Pwd pwd = pwdRepository.findByAcscd("0214", "0");
+////        byte[] decoder = Base64.getDecoder().decode(pwd.getPass());
+////        String v = new String(decoder);
+////        final String mail_Server = pwd.getLib1();
+////        final String user = pwd.getLogin();
+////        final String pass =v;
+////        final String port = pwd.getLib2();
+//
+//        String msg = payload.get("msg");
+//        String title = payload.get("obj");
+//        String email = payload.get("ema");
+//        Properties properties = System.getProperties();
+////INSERT INTO `pwd` (`id`, `login`, `pass`, `descrip`, `etab`, `acscd`, `lib1`, `lib2`, `crtd`, `mdfi`, `dele`, 
+////`dmo`, `dou`, `uti`, `utimo`) VALUES ('5', '', 'RnRzbDIwMjM=', 'Liens du serveur mail', '001', '0214',
+////'', '25', '', '', '0', '2023-11-15 00:00:00', '2023-11-15 00:00:00', '000192', '000192');
+//        // Setup mail server 
+//        properties.setProperty("mail.smtp.host", "webmail.firsttrust.cm");
+//
+//        // SSL Port 
+//        properties.put("mail.smtp.port", "25");
+//
+//        // enable authentication 
+//        properties.put("mail.smtp.auth", "true");
+//        properties.put("mail.smtp.starttls.enable", "true");
+//
+//        // SSL Factory 
+//       // properties.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
+//        properties.put("mail.smtp.ssl.trust", "*");
+//
+//        Session session = Session.getInstance(properties,
+//                new javax.mail.Authenticator() {
+//                    @Override
+//                    protected PasswordAuthentication getPasswordAuthentication() {
+//                        return new PasswordAuthentication("no_reply.mail@firsttrust.cm", "Ftsl2023");
+//                    }
+//                });
+//
+//        try {
+//
+//            MimeMessage message = new MimeMessage(session);
+//
+//            // header field of the header. 
+//            message.setFrom(new InternetAddress("no_reply.mail@firsttrust.cm"));
+//
+//            message.addRecipient(Message.RecipientType.TO,
+//                    new InternetAddress(email));
+//            message.setSubject(title);
+//            message.setText(msg);
+//
+//            Transport.send(message);
+//            response.put("'success", "01");
+//            response.put("message", "message successfully send");
+//            response.put("data", payload);
+//            System.out.println("Done");
+//        } catch (MessagingException e) {
+//            response.put("'success", "100");
+//            response.put("message", "message not send, please try again later");
+//            response.put("data", payload);
+//            e.printStackTrace();
+//        }
+//        return response;
+//    }
 
     @RequestMapping(value = "/mailUpload", method = RequestMethod.POST)
     public Map<String, Object> mailUpload(@RequestBody Map<String, String> payload) {
