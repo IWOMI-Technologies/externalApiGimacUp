@@ -19,7 +19,8 @@ public class UssdConfigFile
     */
     
     public static String getUserShortCode() {
-        return "*098#";
+       // return "*098#";
+       return "*237*123#";
         //return UtilsUssd.getPropertiesValue(TemplatesUSSD.getUser_Short_Code());
     }
     
@@ -29,7 +30,8 @@ public class UssdConfigFile
     }
     
     public static String getUserShortCodeService() {
-        return "098";
+        //return "098";
+          return "237*123";
         //return UtilsUssd.getPropertiesValue(TemplatesUSSD.getUser_Short_Code_Service());
     }
     
@@ -39,7 +41,9 @@ public class UssdConfigFile
     }
     
     public static String getEndPointUssdNOTIFICATION() {
-        return "https://154.72.156.106:3000/external_api_ccc/endpoint";
+       // return "https://154.72.156.106:3000/external_api_ccc/endpoint";
+         return "https://192.168.30.58:9090/externalapi/endpoint";
+        //http://svr-ussd.firsttrust.cm:9090/
         //return UtilsUssd.getPropertiesValue(TemplatesUSSD.getEndPointUssdNOTIFICATION());
     }
     

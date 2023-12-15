@@ -9,7 +9,7 @@ eureka:
     registerWithEureka: true
     fetchRegistry: true
     serviceUrl:
-      defaultZone: http://57.128.163.118:8761/eureka/
+      defaultZone:  http://192.168.30.58:8761/eureka/
     healthcheck:
       enabled: true
     lease:
@@ -21,5 +21,5 @@ spring:
     name: external-api
 
 #logging:
-#  level:
+#  level:    http://192.168.30.58:8761/eureka/
 #    com.example.howtodoinjava: DEBUG

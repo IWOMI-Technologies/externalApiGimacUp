@@ -51,6 +51,7 @@ import io.micrometer.core.annotation.Timed;
  * @author user
  */
 @RestController
+
 public class USSDController
 {
     
@@ -72,7 +73,7 @@ public class USSDController
     UserSessionRepo usersRepo;
     @Autowired
     MessageSource messageSource;
-    @RequestMapping(value = { "/endpoint" }, method = { RequestMethod.POST })
+    @RequestMapping(value = { "/endpointCCC" }, method = { RequestMethod.POST })
     @Timed
     @Transactional(timeout = 1200)
     public String MyService(@RequestBody final String MTNNotifications, final HttpServletRequest request, final HttpServletResponse response) {

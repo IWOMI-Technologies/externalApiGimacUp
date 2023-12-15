@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.iwomi.External_api_cccNewUp.ExternalApiCccNewUpApplicati
+ on
+
