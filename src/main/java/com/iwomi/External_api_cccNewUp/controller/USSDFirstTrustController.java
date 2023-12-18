@@ -88,7 +88,14 @@ public class USSDFirstTrustController {
         System.out.println("yvo login Test3 de USSD:  "+payload.toString());
         String msisdn=checkPayload(payload, "msisdn").toString();
         String sessionid= checkPayload(payload, "sessionid").toString();
-        String message=checkPayload(payload, "message").toString();
+        String message1=checkPayload(payload, "message").toString();
+       Map<String, Object>  mess0=checkPayload(payload, "message1");
+        String message =  payload.get("message").toString();
+//       String mess =  payload.get("message1").toString();
+//       String mess2 =  payload.get("message2").toString();
+//       String mess3 =  payload.get("message3").toString();
+//       String mess4 =  payload.get("message4").toString();
+
         String provider=checkPayload(payload, "provider").toString();
          JSONObject map = new JSONObject();
          String newLine = System.getProperty("line.separator");
@@ -101,15 +108,109 @@ public class USSDFirstTrustController {
        List<labels> labels = labelRepository.findALL("0");
        List<Ussdfirstpage> menu = ussdfirstpageRepository.findAllActive();
        List<Ussdfirstpage> sortedmenu = menu.stream().sorted(Comparator.comparing(Ussdfirstpage::getRang)).collect(Collectors.toList());
-     if(message.equalsIgnoreCase("2")) {
-         map.put("message", "Votres solde c'est : 5 000 000 FCFA");
-         map.put("command", 1);
-     } else {
-         // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+//       System.out.println("hello1");
+//       System.out.println("message input "+mess);
+//       System.out.println("message input "+mess1);
+       if(message.equalsIgnoreCase("1")) {
+           // Logic for checking balance goes here
+           map.put("message", "Votres solde c'est : 5 000 000 FCFA");
+           map.put("command", 1);
+       } else if (message.equalsIgnoreCase("2")) {
+           map.put("message","vos 5 dernieres transaction"+"\n"+"1. first transaction"+"\n"+"2. second transaction"+"\n"+"3. third transaction"+"\n"+"4. fourth transaction"+"\n"+"5. fifth transaction");
+           map.put("command",1);
 
+       }  else if (message.equalsIgnoreCase("3")) {
+           map.put("message","enter a tel num");
+           map.put("command",2);
+          // String telephone =  payload.get("telephone").toString();
+           if (message.equalsIgnoreCase("656834991")) {
+               map.put("message","enter the amount");
+               // String amount =  payload.get("amount")toString();
+               if(message.equalsIgnoreCase("1")){
+                   map.put("message","enter PIN");
+                   if(message.equalsIgnoreCase("1111")){
+                       map.put("message","transaction completed sucessfully");
+                   }else {
+                       // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+                       //String menu_elements = this.getValueByKey("enter_pin_confirm_trans", labels)[2];
+                       //for (Ussdfirstpage elements : sortedmenu) {
+                           //int va = elements.getRang();
+                           //menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                      // }
+                    //   text = menu_elements;
+                       map.put("message", text);
+                       map.put("command", 2);
+                   }
+               }else {
+                   // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+                   String menu_elements = this.getValueByKey("enter_amt_bkmomo", labels)[2];
+                   for (Ussdfirstpage elements : sortedmenu) {
+                       int va = elements.getRang();
+                       menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                   }
+                   text = menu_elements;
+                   map.put("message", text);
+                   map.put("command", 2);
+                   // }
+               }
+
+           } else {
+               // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+               String menu_elements = this.getValueByKey("bankmomo_msg", labels)[2];
+               for (Ussdfirstpage elements : sortedmenu) {
+                   int va = elements.getRang();
+                   menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+               }
+               text = menu_elements;
+               map.put("message", text);
+               map.put("command", 2);
+               // }
+           }
+
+       } else if (message.equalsIgnoreCase("4")) {
+           map.put("message","enter a wallet num");
+           map.put("command",2);
+           if (message.equalsIgnoreCase("1")){
+               map.put("message","enter pin");
+               map.put("command",3);
+           } else {
+               // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+
+               String menu_elements = this.getValueByKey("momobank_msg", labels)[2];
+               for (Ussdfirstpage elements : sortedmenu) {
+                   int va = elements.getRang();
+                   menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+               }
+
+               text = menu_elements;
+               //map.put("message", text);
+              // map.put("command", 2);
+               // }
+           }
+       } else if (message.equalsIgnoreCase("5")) {
+           map.put("message","enter old pin");
+           map.put("command",2);
+           if (message.equalsIgnoreCase("true")) {
+               map.put("message","enter new pin");
+           }else{
+               String menu_elements = this.getValueByKey("changepin_success", labels)[1];
+               for (Ussdfirstpage elements : sortedmenu) {
+                   int va = elements.getRang();
+                   menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+               }
+
+               text = menu_elements;
+               map.put("message", text);
+               map.put("command", 3);
+               // }
+           }
+
+       }else {
+         // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
+         System.out.println("hello2");
          String menu_elements = this.getValueByKey("menu_head", labels)[1];
          for (Ussdfirstpage elements : sortedmenu) {
-             int va = 1 + elements.getRang();
+             int va = elements.getRang();
              menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
          }
 
@@ -122,6 +223,7 @@ public class USSDFirstTrustController {
          return ResponseEntity.status(HttpStatus.OK).body(map.toString());
         //return map;
     }
+
      @RequestMapping(value = "/endpoint/{msisdn}/{sessionid}/{message}/{provider}" , method =  RequestMethod.GET)
     ResponseEntity<String> enpoint1(@PathVariable String msisdn,@PathVariable String sessionid,@PathVariable String message,@PathVariable String provider) {
         System.out.println("yvo login Test3 de USSD:  "+provider);
