@@ -45,14 +45,20 @@ public class UserSession implements Serializable{
     public String lib2;
     public Date crtd;
     public Date mdfi;
+
     @Lob
     @Basic(fetch = FetchType.LAZY)
     public String acc;//json array
     
     public String dele;
 
-   
-    
+    public String menulevel;
+     public String provider;
+     public String transtel;
+   public  String Amount;
+    public  String sublevel;
+    public  String sublevel2;
+    public  String pin;
 
     @Override
     public String toString() {
