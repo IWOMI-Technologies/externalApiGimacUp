@@ -281,7 +281,7 @@ public class USSDFirstTrustController {
                       map.put("message","please enter the phone or walletnumber");
                       user.setPos("3");
                       user.setPreval("2");
-                      user.setTranstel(message);
+//                      user.setTranstel(message);
                       user.setSublevel("1");
                       user.setMenulevel("1");// keep it to menu message
                       usersRepo.save(user);
@@ -299,7 +299,7 @@ public class USSDFirstTrustController {
                       
                   } else if (pos.equalsIgnoreCase("2")&&message.equalsIgnoreCase("3")) {
                       System.out.println("this step is ok pos level3 s4"+pos);
-                      map.put("message","choose the contry for the transaction"+"\n"+"1. Gabon"+"\n"+"2. Tchad"+"\n" +"3. RCA"+"\n"+"4. Congo"+"\n" +"6. cca"+"\n"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                      map.put("message","choose the country for the transaction"+"\n"+"1. Gabon"+"\n"+"2. Tchad"+"\n" +"3. RCA"+"\n"+"4. Congo"+"\n" +"6. cca"+"\n"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                       user.setPos("3");
                       user.setPreval("2");
                       user.setSublevel("3");
@@ -424,7 +424,7 @@ public class USSDFirstTrustController {
                       usersRepo.save(user);
                       map.put("command",5);
                   }else if (pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("2")) {
-                      map.put("message","please enter the phone or walletnumber");
+                      map.put("message","please enter the amount to transfer");
                       user.setPos("5");
                       user.setPreval("4");
                       user.setTranstel(message);
@@ -433,12 +433,37 @@ public class USSDFirstTrustController {
                       map.put("command",5);
 
                   }else if (pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("3")){
-                      map.put("message","choose the bank to whom to want to transfer"+"\n"+"1. Bipay"+"\n"+"2. speedoh"+"\n" +"3. orange money"+"\n"+"4. mobile money"+"5. afriland"+"\n" +"6. cca"+"\n"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                      user.setPos("5");
-                      user.setPreval("4");
-                      user.setMenulevel("1");// keep it to menu message
-                      usersRepo.save(user);
-                      map.put("command",5);
+
+                      if(message.equalsIgnoreCase("1")){
+                          // you will add memeber accordingly to all the banks
+                          map.put("message", "sending to bipay account enter the wallet number ");
+                          user.setPos("5");
+                          user.setPreval("4");
+                          user.setMenulevel("1");// keep it to menu message
+                          usersRepo.save(user);
+                          map.put("command", 6);
+                      } else if (message.equalsIgnoreCase("2")) {
+                          map.put("message", "sending to speedoh account enter the wallet number ");
+                          user.setPos("5");
+                          user.setPreval("4");
+                          user.setMenulevel("1");// keep it to menu message
+                          usersRepo.save(user);
+                          map.put("command", 6);
+                      }else if (message.equalsIgnoreCase("3")) {
+                          map.put("message", "sending to om account enter the wallet number ");
+                          user.setPos("5");
+                          user.setPreval("4");
+                          user.setMenulevel("1");// keep it to menu message
+                          usersRepo.save(user);
+                          map.put("command", 6);
+                      }else if (message.equalsIgnoreCase("4")) {
+                          map.put("message", "sending to momo account enter the wallet number ");
+                          user.setPos("5");
+                          user.setPreval("4");
+                          user.setMenulevel("1");// keep it to menu message
+                          usersRepo.save(user);
+                          map.put("command", 6);
+                      }
 
                   }
               }else if(pos.equalsIgnoreCase("5")){
@@ -447,7 +472,7 @@ public class USSDFirstTrustController {
                       map.put("command",0);
 
                   }else if (pos.equalsIgnoreCase("5")&& user.getSublevel().equalsIgnoreCase("2")) {
-                      map.put("message","please enter the amount for transfer");
+                      map.put("message","you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation");
                       user.setPos("6");
                       user.setAmount(message);
                       user.setMenulevel("1");// keep it to menu message
@@ -458,48 +483,48 @@ public class USSDFirstTrustController {
 
                       if(message.equalsIgnoreCase("1")){
                           // you will add memeber accordingly to all the banks
-                          map.put("message", "sending to bipay account enter the number ");
+                          map.put("message", "enter the amount you want to transfer ");
                           user.setPos("6");
                           user.setAmount(message);
                           user.setMenulevel("1");// keep it to menu message
                           usersRepo.save(user);
                           map.put("command", 6);
-                      } else if (message.equalsIgnoreCase("2")) {
-                          map.put("message", "sending to speedoh account enter the number ");
-                          user.setPos("6");
-                          user.setAmount(message);
-                          user.setMenulevel("1");// keep it to menu message
-                          usersRepo.save(user);
-                          map.put("command", 6);
-                      }else if (message.equalsIgnoreCase("3")) {
-                          map.put("message", "sending to om account enter the number ");
-                          user.setPos("6");
-                          user.setAmount(message);
-                          user.setMenulevel("1");// keep it to menu message
-                          usersRepo.save(user);
-                          map.put("command", 6);
-                      }else if (message.equalsIgnoreCase("4")) {
-                          map.put("message", "sending to momo account enter the number ");
-                          user.setPos("6");
-                          user.setAmount(message);
-                          user.setMenulevel("1");// keep it to menu message
-                          usersRepo.save(user);
-                          map.put("command", 6);
-                      }
+                     }
+//                      else if (message.equalsIgnoreCase("2")) {
+//                          map.put("message", "sending to speedoh account enter the number ");
+//                          user.setPos("6");
+//                          user.setAmount(message);
+//                          user.setMenulevel("1");// keep it to menu message
+//                          usersRepo.save(user);
+//                          map.put("command", 6);
+//                      }else if (message.equalsIgnoreCase("3")) {
+//                          map.put("message", "sending to om account enter the number ");
+//                          user.setPos("6");
+//                          user.setAmount(message);
+//                          user.setMenulevel("1");// keep it to menu message
+//                          usersRepo.save(user);
+//                          map.put("command", 6);
+//                      }else if (message.equalsIgnoreCase("4")) {
+//                          map.put("message", "sending to momo account enter the number ");
+//                          user.setPos("6");
+//                          user.setAmount(message);
+//                          user.setMenulevel("1");// keep it to menu message
+//                          usersRepo.save(user);
+//                          map.put("command", 6);
+//                      }
 
                   }
 
               }else  if (pos.equalsIgnoreCase("6")){
                   if(pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("2")){
-                      map.put("message"," you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation");
+                      map.put("message","transaction successfull");
                       user.setPos("7");
-                      user.setPin(message);
                       user.setPreval("6");
                       user.setMenulevel("1");// keep it to menu message
                       usersRepo.save(user);
-                      map.put("command",7);
+                      map.put("command",0);
                   } else if (pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("3")) {
-                      map.put("message","please enter the phone or walletnumber");
+                      map.put("message","you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation");
                       user.setPos("7");
                       user.setPreval("6");
                       user.setTranstel(message);
@@ -509,32 +534,10 @@ public class USSDFirstTrustController {
                   }
               }else  if (pos.equalsIgnoreCase("7")){
 
-                  if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
+                  if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("3")){
                       map.put("message","transaction successfull thanks for trust");
                       map.put("command",0);
-                  } else if (pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("3")) {
-                      map.put("message","please enter the amount for transfer");
-                      user.setPos("8");
-                      user.setPreval("7");
-                      user.setAmount(message);
-                      user.setMenulevel("1");// keep it to menu message
-                      usersRepo.save(user);
-                      map.put("command",8);
                   }
-              } else if(pos.equalsIgnoreCase("8")){
-                  if(pos.equalsIgnoreCase("8")&& user.getSublevel().equalsIgnoreCase("3")){
-                      map.put("message"," you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation");
-                      user.setPos("9");
-                      user.setPin(message);
-                      user.setPreval("8");
-                      user.setMenulevel("1");// keep it to menu message
-                      usersRepo.save(user);
-                      map.put("command",9);
-                  }
-              }else if(pos.equalsIgnoreCase("9")){
-                  map.put("message","transaction successfull thanks for trust");
-                  map.put("command",0);
-
               }
           }
     }else {
