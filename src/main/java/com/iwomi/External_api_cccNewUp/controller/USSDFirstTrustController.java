@@ -481,7 +481,6 @@ public class USSDFirstTrustController {
 
                   }else if (pos.equalsIgnoreCase("5")&& user.getSublevel().equalsIgnoreCase("3")) {
 
-                      if(message.equalsIgnoreCase("1")){
                           // you will add memeber accordingly to all the banks
                           map.put("message", "enter the amount you want to transfer ");
                           user.setPos("6");
@@ -489,29 +488,6 @@ public class USSDFirstTrustController {
                           user.setMenulevel("1");// keep it to menu message
                           usersRepo.save(user);
                           map.put("command", 6);
-                     }
-//                      else if (message.equalsIgnoreCase("2")) {
-//                          map.put("message", "sending to speedoh account enter the number ");
-//                          user.setPos("6");
-//                          user.setAmount(message);
-//                          user.setMenulevel("1");// keep it to menu message
-//                          usersRepo.save(user);
-//                          map.put("command", 6);
-//                      }else if (message.equalsIgnoreCase("3")) {
-//                          map.put("message", "sending to om account enter the number ");
-//                          user.setPos("6");
-//                          user.setAmount(message);
-//                          user.setMenulevel("1");// keep it to menu message
-//                          usersRepo.save(user);
-//                          map.put("command", 6);
-//                      }else if (message.equalsIgnoreCase("4")) {
-//                          map.put("message", "sending to momo account enter the number ");
-//                          user.setPos("6");
-//                          user.setAmount(message);
-//                          user.setMenulevel("1");// keep it to menu message
-//                          usersRepo.save(user);
-//                          map.put("command", 6);
-//                      }
 
                   }
 
@@ -536,6 +512,24 @@ public class USSDFirstTrustController {
 
                   if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("3")){
                       map.put("message","transaction successfull thanks for trust");
+                      map.put("command",0);
+                  }
+              }
+          }else if (ml.equalsIgnoreCase("2")){
+              if (pos.equalsIgnoreCase("1")){
+                  if(pos.equalsIgnoreCase("1")){
+                      map.put("message","please enter your pin for verification");
+                      user.setPos("2");
+                      user.setPreval("1");
+                      user.setMenulevel("2");// keep it to menu message
+                      usersRepo.save(user);
+                      map.put("command",2);
+                  } else if (pos.equalsIgnoreCase("2")) {
+                      map.put("message","you have 50000FCFA in your account");
+                      user.setPos("3");
+                      user.setPreval("2");
+                      user.setMenulevel("2");// keep it to menu message
+                      usersRepo.save(user);
                       map.put("command",0);
                   }
               }
