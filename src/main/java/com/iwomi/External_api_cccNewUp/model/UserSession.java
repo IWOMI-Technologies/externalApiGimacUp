@@ -59,7 +59,8 @@ public class UserSession implements Serializable{
     public  String sublevel;
     public  String sublevel2;
     public  String pin;
-
+     public String  duration;
+   public  String language;
     @Override
     public String toString() {
         return "UserSession{" + "id=" + id + ", phone=" + phone + ", uuid=" + uuid + ", pos=" + pos + ", preval=" + preval + ", iscon=" + iscon + ", lang=" + lang + ", lib2=" + lib2 + ", crtd=" + crtd + ", mdfi=" + mdfi + ", dele=" + dele + '}';
