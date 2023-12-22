@@ -278,7 +278,7 @@ public class USSDFirstTrustController {
                 System.out.println("this step is ok pos level2" + pos);
                 if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
                     System.out.println("this step is ok pos level1 s1" + pos);
-                    map.put("message", "please enter the phone or walletnumber");
+                    map.put("message", "please enter the phone or walletnumber"+ "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                     user.setPos("3");
                     user.setPreval("2");
 //                      user.setTranstel(message);
