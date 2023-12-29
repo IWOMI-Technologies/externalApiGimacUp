@@ -227,8 +227,6 @@ public class USSDFirstTrustController {
 
     //main endpoint service function
     @RequestMapping(value = "/endpoint" , method =  RequestMethod.POST)
-    // @Timed
-    // @Transactional(timeout = 1200)
     ResponseEntity<String> enpoint(@RequestBody Map<String, Object> payload) {
         System.out.println("yvo login Test3 de USSD:  "+payload.toString());
         String msisdn1=checkPayload(payload, "msisdn").toString();
@@ -239,7 +237,7 @@ public class USSDFirstTrustController {
         String sessionid =  payload.get("sessionid").toString();
         String msisdn =  payload.get("msisdn").toString();
         String provider =  payload.get("provider").toString();
-        
+
         String provider1=checkPayload(payload, "provider").toString();
         JSONObject map = new JSONObject();
         String newLine = System.getProperty("line.separator");
@@ -254,807 +252,1911 @@ public class USSDFirstTrustController {
         List<Ussdfirstpage> sortedmenu = menu.stream().sorted(Comparator.comparing(Ussdfirstpage::getRang)).collect(Collectors.toList());
       
     if(user!=null) {
-        String pos = user.getPos();
-        if (pos.equalsIgnoreCase("1")) {
-            UserSession user3 = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
-            user3.setMenulevel(message);
-            usersRepo.save(user3);
-        }
-        String ml = user.getMenulevel();
-
-        if (ml.equalsIgnoreCase("1")) {
-            System.out.println("this step is ok ml level");
+        //booundaries start
+        //french language translation
+        if(user.getLanguage().equalsIgnoreCase("1")){
+            String pos = user.getPos();
             if (pos.equalsIgnoreCase("1")) {
-                System.out.println("this step is ok pos level1" + pos);
-                // Making a transaction gos here
-                map.put("message", "entrer le pay ou la zone ou vous voulez transactioner" + "\n" + "1. firsttrust to firsttrust" + "\n" + "2. other cameroon" + "\n" + "3. other CEMAC" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("1");// keep it to menu message
-                usersRepo.save(user);
-                System.out.println("this is the message value:" + message);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                System.out.println("this step is ok pos level2" + pos);
-                if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
-                    System.out.println("this step is ok pos level1 s1" + pos);
-                    map.put("message", "please enter the phone or walletnumber"+ "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                    user.setPos("3");
-                    user.setPreval("2");
+                UserSession user3 = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
+                user3.setMenulevel(message);
+                usersRepo.save(user3);
+            }
+            String ml = user.getMenulevel();
+
+            if (ml.equalsIgnoreCase("1")) {
+                System.out.println("this step is ok ml level");
+                if (pos.equalsIgnoreCase("1")) {
+                    System.out.println("this step is ok pos level1" + pos);
+                    // Making a transaction gos here
+                    map.put("message", "entrer le pay ou la zone ou vous voulez transactioner" + "\n" + "1. firsttrust a firsttrust" + "\n" + "2. Autre cameroon" + "\n" + "3. Autre CEMAC" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("1");// keep it to menu message
+                    usersRepo.save(user);
+                    System.out.println("this is the message value:" + message);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    System.out.println("this step is ok pos level2" + pos);
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
+                        System.out.println("this step is ok pos level1 s1" + pos);
+                        map.put("message", "veuillez entrer le numéro de téléphone ou le numero de portefeuille"+ "\n" + "7777. precedent" + "\n" + "9999 . menu principal" + "\n" + "0. quitter" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
 //                      user.setTranstel(message);
-                    user.setSublevel("1");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
-                    System.out.println("hello this submenu2");
-                    System.out.println("this step is ok pos level2 s2" + pos);
-                    map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                    user.setPos("3");
-                    user.setSublevel("2");
-                    user.setPreval("2");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 3);
+                        user.setSublevel("1");
+                        user.setMenulevel("1");// keep it to menu message
+                        usersRepo.save(user);
+                        map.put("command",  3);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
+                        System.out.println("hello this submenu2");
+                        System.out.println("this step is ok pos level2 s2" + pos);
+                        map.put("message", "choisissez  la banque ou vous voulez faire le transfert" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . menu principal" + "\n" + "0. quitter" + "\n");
+                        user.setPos("3");
+                        user.setSublevel("2");
+                        user.setPreval("2");
+                        user.setMenulevel("1");// keep it to menu message
+                        usersRepo.save(user);
+                        map.put("command", 3);
 
-                } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("3")) {
-                    System.out.println("this step is ok pos level3 s4" + pos);
-                    map.put("message", "choose the country for the transaction" + "\n" + "1. Gabon" + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setSublevel("3");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 3);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("3")) {
+                        System.out.println("this step is ok pos level3 s4" + pos);
+                        map.put("message", "choose the country for the transaction" + "\n" + "1. Gabon" + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setSublevel("3");
+                        user.setMenulevel("1");// keep it to menu message
+                        usersRepo.save(user);
+                        map.put("command", 3);
 
-                } else {
-                    System.out.println("hello2");
-                    String menu_elements = this.getValueByKey("menu_head", labels)[1];
-                    for (Ussdfirstpage elements : sortedmenu) {
-                        int va = elements.getRang();
-                        menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+
+                    } else {
+                        System.out.println("hello2");
+                        String menu_elements = this.getValueByKey("menu_head", labels)[1];
+                        for (Ussdfirstpage elements : sortedmenu) {
+                            int va = elements.getRang();
+                            menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                        }
+                        text = menu_elements;
+
+                        map.put("message", text);
+                        map.put("command", 1);
+                        UserSession user2 = new UserSession();
+                        user2.setMenulevel(message);
+                        user2.setUuid(sessionid);
+                        user2.setPhone(msisdn);
+                        user2.setProvider(provider);
+                        user2.setPos("1");
+                        usersRepo.save(user2);
+                        // }
                     }
-                    text = menu_elements;
 
-                    map.put("message", text);
-                    map.put("command", 1);
-                    UserSession user2 = new UserSession();
-                    user2.setMenulevel(message);
-                    user2.setUuid(sessionid);
-                    user2.setPhone(msisdn);
-                    user2.setProvider(provider);
-                    user2.setPos("1");
-                    usersRepo.save(user2);
-                    // }
-                }
+                } else if (pos.equalsIgnoreCase("3")) {
+                    String st = user.getSublevel();
+                    //number verification
+                    if (st.equalsIgnoreCase("1")) {
+                        if(message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter the amount you want to send"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }
 
-            } else if (pos.equalsIgnoreCase("3")) {
-                String st = user.getSublevel();
-                //number verification
-                if (st.equalsIgnoreCase("1")) {
-                    map.put("message", "enter the amount you want to send"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("4");
-                    user.setPreval("3");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 4);
-                } else if (st.equalsIgnoreCase("2")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        // you will add memeber accordingly to all the banks
-                        map.put("message", "sending to bipay account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "sending to speedoh account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "sending to om account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("4")) {
-                        map.put("message", "sending to momo account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
+                    } else if (st.equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            // you will add memeber accordingly to all the banks
+                            map.put("message", "sending to bipay account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "sending to speedoh account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "sending to om account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "sending to momo account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    } else if (st.equalsIgnoreCase("3")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            // user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            // user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("5")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                        System.out.println("pos 4 level");
                     }
-                } else if (st.equalsIgnoreCase("3")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        //user.setSublevel(message);
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        // user.setSublevel(message);
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        // user.setSublevel(message);
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("4")) {
-                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        //user.setSublevel(message);
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("5")) {
-                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        //user.setSublevel(message);
-                        user.setPreval("3");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
+                } else if (pos.equalsIgnoreCase("4")) {
+                    System.out.println("pos 4 level1");
+                    if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", " you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPin(message);
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setTranstel(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("3")) {
+
+                        if (message.equalsIgnoreCase("1")) {
+                            // you will add memeber accordingly to all the banks
+                            map.put("message", "sending to bipay account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "sending to speedoh account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "sending to om account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "sending to momo account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",0);
+                        }
+
                     }
-                    System.out.println("pos 4 level");
-                }
-            } else if (pos.equalsIgnoreCase("4")) {
-                System.out.println("pos 4 level1");
-                if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", " you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("5");
-                    user.setPin(message);
-                    user.setPreval("4");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 5);
-                } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("5");
-                    user.setPreval("4");
-                    user.setTranstel(message);
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 5);
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "transaction successfull");
+                        map.put("command", 5);
 
-                } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("3")) {
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
 
-                    if (message.equalsIgnoreCase("1")) {
-                        // you will add memeber accordingly to all the banks
-                        map.put("message", "sending to bipay account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setAmount(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("3")) {
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "enter the amount you want to transfer "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setAmount(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+                    }
+
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("2")) {
+                        map.put("message", "transaction successfull");
+                        user.setPos("7");
+                        user.setPreval("6");
                         user.setMenulevel("1");// keep it to menu message
                         usersRepo.save(user);
                         map.put("command", 6);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "sending to speedoh account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("1");// keep it to menu message
+                    } else if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("3")) {
+
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setTranstel(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 7);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("7")) {
+
+                    if (pos.equalsIgnoreCase("7") && user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "transaction successfull thanks for trust");
+                        map.put("command", 7);
+                    }
+                }
+            } else if (ml.equalsIgnoreCase("2")) {
+
+                if (pos.equalsIgnoreCase("1")) {
+
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if ((message.equalsIgnoreCase("9999"))){
+                        map.put("command", 0);
+                    }else{
+                        map.put("message", "you have 50000FCFA in your account"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("2");// keep it to menu message
                         usersRepo.save(user);
-                        map.put("command", 6);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "sending to om account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 6);
-                    } else if (message.equalsIgnoreCase("4")) {
-                        map.put("message", "sending to momo account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("1");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 6);
+                        map.put("command", 2);
                     }
 
-                }
-            } else if (pos.equalsIgnoreCase("5")) {
-                if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", "transaction successfull");
-                    map.put("command", 0);
-
-                } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("6");
-                    user.setAmount(message);
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 6);
-
-                } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("3")) {
-
-                    // you will add memeber accordingly to all the banks
-                    map.put("message", "enter the amount you want to transfer "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("6");
-                    user.setAmount(message);
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 6);
 
                 }
 
-            } else if (pos.equalsIgnoreCase("6")) {
-                if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "transaction successfull");
-                    user.setPos("7");
-                    user.setPreval("6");
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 0);
-                } else if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("3")) {
-                    map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("7");
-                    user.setPreval("6");
-                    user.setTranstel(message);
-                    user.setMenulevel("1");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 7);
-                }
-            } else if (pos.equalsIgnoreCase("7")) {
-
-                if (pos.equalsIgnoreCase("7") && user.getSublevel().equalsIgnoreCase("3")) {
-                    map.put("message", "transaction successfull thanks for trust"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    map.put("command", 0);
-                }
-            }
-        } else if (ml.equalsIgnoreCase("2")) {
-
-            if (pos.equalsIgnoreCase("1")) {
-                map.put("message", "please enter your pin for verification"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("2");// keep it to menu message
-                usersRepo.save(user);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                map.put("message", "you have 50000FCFA in your account"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                user.setPos("3");
-                user.setPreval("2");
-                user.setMenulevel("2");// keep it to menu message
-                usersRepo.save(user);
-                map.put("command", 0);
-            }
-
-        } else if (ml.equalsIgnoreCase("3")) {
-            if (pos.equalsIgnoreCase("1")) {
-                // billpayment goes here
-                map.put("message", "choose the country or the zone " + "\n" + "1. Cameroon" + "\n" + "2. Cemac Zone" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("3");
-                usersRepo.save(user);
-                System.out.println("this is the message value:" + message);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
-                    map.put("message", "which bill  do you want to pay " + "\n" + "1. Eneo" + "\n" + "2. Camwater" + "\n" + "3. Guce" + "\n" + "4. Canal +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                    user.setPos("3");
-                    user.setPreval("2");
+            } else if (ml.equalsIgnoreCase("3")) {
+                if (pos.equalsIgnoreCase("1")) {
+                    // billpayment goes here
+                    map.put("message", "choose the country or the zone " + "\n" + "1. Cameroon" + "\n" + "2. Cemac Zone" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                    user.setPos("2");
+                    user.setPreval("1");
                     user.setMenulevel("3");
-                    user.setSublevel("1");
                     usersRepo.save(user);
                     System.out.println("this is the message value:" + message);
                     map.put("command", 2);
-                } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
-                    map.put("message", "Choose the Country for the transaction" + "\n" + "1. Gabon " + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("3");
-                    user.setSublevel("2");
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
+                        map.put("message", "which bill  do you want to pay " + "\n" + "1. Eneo" + "\n" + "2. Camwater" + "\n" + "3. Guce" + "\n" + "4. Canal +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("3");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        System.out.println("this is the message value:" + message);
+                        map.put("command", 2);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
+                        map.put("message", "Choose the Country for the transaction" + "\n" + "1. Gabon " + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("3");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        System.out.println("this is the message value:" + message);
+                        map.put("command", 2);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+                    }
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("1")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "please enter your eneo bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "please enter your camwater bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "please enter your Guce bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    } else if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    }
+
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "please enter your sagessa bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "please enter your Airtel bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "please enter your Moov bill number");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "thanks for using first trust ");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 0);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("command",0);
+                        } else if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }else{
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+
+                    }
+
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "payment successful");
+                        user.setPos("7");
+                        user.setPreval("6");
+                        user.setMenulevel("3");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        map.put("command", 7);
+
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 7);
+
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "thanks for using first trust "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 7);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        } else if (message.equalsIgnoreCase("0")) {
+                            map.put("command",0);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("7")) {
+
+                    if (user.getSublevel().equalsIgnoreCase("2")) {
+                        map.put("message", "payment successful");
+                        user.setPos("8");
+                        user.setPreval("7");
+                        user.setMenulevel("3");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command",7);
+                    }
+                }
+
+
+            } else if (ml.equalsIgnoreCase("5")) {
+                //loan
+                if (pos.equalsIgnoreCase("1")) {
+                    map.put("message", "choose the type of loan you want " + "\n" + "1. Decouvert" + "\n" + "2. consomation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("5");
+                    //user.setSublevel("2");
+                    usersRepo.save(user);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (message.equalsIgnoreCase("1")) {
+                        map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("5");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("2")) {
+                        map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("5");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+                    }
+
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        }
+
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter the duration for the loan in month"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        }
+
+                    }
+
+                } else if (pos.equalsIgnoreCase("4")) {
+
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "your account has been credited of 10000FCFA thanks for your trust");
+                        user.setPos("5");
+                        user.setPreval("4");
+                        user.setMenulevel("5");
+                        usersRepo.save(user);
+                        map.put("command", 5);
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "how much do you want to borrow:"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }
+
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "come to the agnecy with all the required document for completion and validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 0);
+                        }
+                    }
+                }
+            } else if (ml.equalsIgnoreCase("6")) {
+                if (pos.equalsIgnoreCase("1")) {
+                    map.put("message", "walcome to account management " + "\n" + "1. My language " + "\n" + "2. My transaction" + "\n" + "3. change pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("6");
+                    //user.setSublevel("2");
+                    usersRepo.save(user);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (message.equalsIgnoreCase("1")) {
+                        map.put("message", "change the language here" + "\n" + "1. French " + "\n" + "2. My English"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        map.put("command", 0);
+
+                    } else if (message.equalsIgnoreCase("2")) {
+                        map.put("message", "your last transaction" + "\n" + "1. first transaction" + "\n" + "2. second transaction" + "\n" + "3. third transaction" + "\n" + "4. fourth transaction" + "\n" + "5. fifth transaction" +"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command", 1);
+                    } else if (message.equalsIgnoreCase("3")) {
+                        map.put("message", "enter your old pin");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+                    }
+
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "enter the new pin");
+                        user.setPos("4");
+                        user.setPreval("3");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    }else if (user.getSublevel().equalsIgnoreCase("1")){
+                        System.out.println("hello change language ");
+                        if (message.equalsIgnoreCase("1")){
+                            System.out.println("hello change language ");
+                            user.setLanguage("1");
+                            user.setPos("1");
+                            user.setPreval("0");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            System.out.println("hello change language ");
+                            user.setLanguage("0");
+                            user.setPos("1");
+                            user.setPreval("0");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "confirm by entering again the new pin ");
+                        user.setPos("5");
+                        user.setPreval("4");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command",3);
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "pin updated succesfully");
+                        user.setPos("6");
+                        user.setPreval("5");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command", 1);
+                    }
+                }
+            }else if (ml.equalsIgnoreCase("4")) {
+                if (pos.equalsIgnoreCase("1")){
+                    map.put("message", "entrer le pay ou la zone ou vous voulez transactioner"+"\n"+"1. CAMEROON "+"\n"+"2. other CEMAC country"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("4");// keep it to menu message
+                    usersRepo.save(user);
+                    System.out.println("this is the message value:"+message);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")){
+                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. orange "+"\n"+"2. mtn"+"\n"+"3. Camtel"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setSublevel("1");
+                        user.setMenulevel("4");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    } else if (pos.equalsIgnoreCase("2")&& (message.equalsIgnoreCase("2")) ){
+                        map.put("message","choose the country for the transaction"+"\n"+"1. TCHAD "+"\n"+"2. GABON"+"\n"+"3. RCA"+"\n"+"4. CONGO"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("4");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    } else if (pos.equalsIgnoreCase("2")&& (message.equalsIgnoreCase("9999"))) {
+                        map.put("command",1);
+                    }
+                } else if (pos.equalsIgnoreCase("3")) {
+                    String st = user.getSublevel();
+                    if (st.equalsIgnoreCase("1")){
+                        if(message.equalsIgnoreCase("1")){
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        }
+                    } else if (st.equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")){
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("4")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if(pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        } else  {
+                            map.put("message","please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setTranstel(message);
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("2")) {
+                        if(message.equalsIgnoreCase("1")){
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setMenulevel("4");
+                            user.setPreval("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        }else {
+                            map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",6);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        }else {
+                            map.put("message","enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("4");
+                            user.setTranstel(message);
+                            usersRepo.save(user);
+                            map.put("command",6);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if(pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        } else {
+                            map.put("message","transaction successfull"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",7);
+                        }
+                    } else if (pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        } else {
+                            map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setTranstel(message);
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",7);
+                        }
+
+                    }
+                }else  if (pos.equalsIgnoreCase("7")){
+                    if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
+                        map.put("message","transaction successfull thanks for trust");
+                        user.setPos("8");
+                        map.put("command",8);
+                    }
+                }
+            }
+      // english language
+        } else if (user.getLanguage().equalsIgnoreCase("0")) {
+            String pos = user.getPos();
+            if (pos.equalsIgnoreCase("1")) {
+                UserSession user3 = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
+                user3.setMenulevel(message);
+                usersRepo.save(user3);
+            }
+            String ml = user.getMenulevel();
+
+            if (ml.equalsIgnoreCase("1")) {
+                System.out.println("this step is ok ml level");
+                if (pos.equalsIgnoreCase("1")) {
+                    System.out.println("this step is ok pos level1" + pos);
+                    // Making a transaction gos here
+                    map.put("message", "entrer the country or yone to do transactions" + "\n" + "1. firsttrust to firsttrust" + "\n" + "2. other cameroon" + "\n" + "3. other CEMAC" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("1");// keep it to menu message
                     usersRepo.save(user);
                     System.out.println("this is the message value:" + message);
                     map.put("command", 2);
-                }
-            } else if (pos.equalsIgnoreCase("3")) {
-                if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("1")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "please enter your eneo bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");
+                } else if (pos.equalsIgnoreCase("2")) {
+                    System.out.println("this step is ok pos level2" + pos);
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
+                        System.out.println("this step is ok pos level1 s1" + pos);
+                        map.put("message", "please enter the phone or walletnumber"+ "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+//                      user.setTranstel(message);
                         user.setSublevel("1");
+                        user.setMenulevel("1");// keep it to menu message
+                        usersRepo.save(user);
+                        map.put("command",  3);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
+                        System.out.println("hello this submenu2");
+                        System.out.println("this step is ok pos level2 s2" + pos);
+                        map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setSublevel("2");
+                        user.setPreval("2");
+                        user.setMenulevel("1");// keep it to menu message
                         usersRepo.save(user);
                         map.put("command", 3);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "please enter your camwater bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");
-                        user.setSublevel("1");
-                        usersRepo.save(user);
-                        map.put("command", 3);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "please enter your Guce bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");
-                        user.setSublevel("1");
-                        usersRepo.save(user);
-                        map.put("command", 3);
-                    }
-                } else if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("2")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("4")) {
-                        map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
-                        user.setPos("4");
-                        user.setPreval("3");
-                        user.setMenulevel("3");// keep it to menu message
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    }
-                }
 
-            } else if (pos.equalsIgnoreCase("4")) {
-                if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
-                    user.setPos("5");
-                    user.setPreval("4");
-                    user.setMenulevel("3");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command", 5);
-                } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "please enter your sagessa bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("3");
-                        user.setSublevel("2");
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("3")) {
+                        System.out.println("this step is ok pos level3 s4" + pos);
+                        map.put("message", "choose the country for the transaction" + "\n" + "1. Gabon" + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setSublevel("3");
+                        user.setMenulevel("1");// keep it to menu message
                         usersRepo.save(user);
-                        map.put("command", 5);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "please enter your Airtel bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("3");
-                        user.setSublevel("2");
-                        usersRepo.save(user);
-                        map.put("command", 5);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message", "please enter your Moov bill number");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("3");
-                        user.setSublevel("2");
-                        usersRepo.save(user);
-                        map.put("command", 5);
-                        ;
+                        map.put("command", 3);
+
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+
+                    } else {
+                        System.out.println("hello2");
+                        String menu_elements = this.getValueByKey("menu_head", labels)[1];
+                        for (Ussdfirstpage elements : sortedmenu) {
+                            int va = elements.getRang();
+                            menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                        }
+                        text = menu_elements;
+
+                        map.put("message", text);
+                        map.put("command", 1);
+                        UserSession user2 = new UserSession();
+                        user2.setMenulevel(message);
+                        user2.setUuid(sessionid);
+                        user2.setPhone(msisdn);
+                        user2.setProvider(provider);
+                        user2.setPos("1");
+                        usersRepo.save(user2);
+                        // }
                     }
-                }
-            } else if (pos.equalsIgnoreCase("5")) {
-                if (user.getSublevel().equalsIgnoreCase("1")) {
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("6");
-                        user.setPreval("5");
-                        user.setMenulevel("3");
-                        user.setSublevel("1");
+
+                } else if (pos.equalsIgnoreCase("3")) {
+                    String st = user.getSublevel();
+                    //number verification
+                    if (st.equalsIgnoreCase("1")) {
+                        if(message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter the amount you want to send"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }
+
+                    } else if (st.equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            // you will add memeber accordingly to all the banks
+                            map.put("message", "sending to bipay account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "sending to speedoh account enter the number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "sending to om account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "sending to momo account enter the number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    } else if (st.equalsIgnoreCase("3")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            // user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            // user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("5")) {
+                            map.put("message", "choose the bank to whom to want to transfer" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            //user.setSublevel(message);
+                            user.setPreval("3");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                        System.out.println("pos 4 level");
+                    }
+                } else if (pos.equalsIgnoreCase("4")) {
+                    System.out.println("pos 4 level1");
+                    if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", " you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPin(message);
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setTranstel(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("3")) {
+
+                        if (message.equalsIgnoreCase("1")) {
+                            // you will add memeber accordingly to all the banks
+                            map.put("message", "sending to bipay account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "sending to speedoh account enter the wallet number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "sending to om account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "sending to momo account enter the wallet number "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",0);
+                        }
+
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "transaction successfull");
+                        map.put("command", 5);
+
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setAmount(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("3")) {
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "enter the amount you want to transfer "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setAmount(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+                    }
+
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("2")) {
+                        map.put("message", "transaction successfull");
+                        user.setPos("7");
+                        user.setPreval("6");
+                        user.setMenulevel("1");// keep it to menu message
                         usersRepo.save(user);
                         map.put("command", 6);
+                    } else if (pos.equalsIgnoreCase("6") && user.getSublevel().equalsIgnoreCase("3")) {
 
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "thanks for using first trust ");
-                        user.setPos("6");
-                        user.setPreval("5");
-                        user.setMenulevel("3");
-                        user.setSublevel("1");
-                        usersRepo.save(user);
-                        map.put("command", 0);
+                        if ((message.equalsIgnoreCase("9999"))){
+                            map.put("command", 0);
+                        }else{
+                            map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setTranstel(message);
+                            user.setMenulevel("1");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 7);
+                        }
                     }
-                } else if (user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
-                    user.setPos("6");
-                    user.setPreval("5");
-                    user.setMenulevel("3");
-                    user.setSublevel("2");
-                    usersRepo.save(user);
-                    map.put("command", 6);
+                } else if (pos.equalsIgnoreCase("7")) {
+
+                    if (pos.equalsIgnoreCase("7") && user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "transaction successfull thanks for trust");
+                        map.put("command", 7);
+                    }
+                }
+            } else if (ml.equalsIgnoreCase("2")) {
+
+                if (pos.equalsIgnoreCase("1")) {
+
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if ((message.equalsIgnoreCase("9999"))){
+                        map.put("command", 0);
+                    }else{
+                        map.put("message", "you have 50000FCFA in your account"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("2");// keep it to menu message
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    }
+
 
                 }
 
-            } else if (pos.equalsIgnoreCase("6")) {
-                if (user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", "payment successful");
-                    user.setPos("7");
-                    user.setPreval("6");
+            } else if (ml.equalsIgnoreCase("3")) {
+                if (pos.equalsIgnoreCase("1")) {
+                    // billpayment goes here
+                    map.put("message", "choose the country or the zone " + "\n" + "1. Cameroon" + "\n" + "2. Cemac Zone" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                    user.setPos("2");
+                    user.setPreval("1");
                     user.setMenulevel("3");
-                    user.setSublevel("1");
                     usersRepo.save(user);
-                    map.put("command", 0);
+                    System.out.println("this is the message value:" + message);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")) {
+                        map.put("message", "which bill  do you want to pay " + "\n" + "1. Eneo" + "\n" + "2. Camwater" + "\n" + "3. Guce" + "\n" + "4. Canal +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("3");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        System.out.println("this is the message value:" + message);
+                        map.put("command", 2);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
+                        map.put("message", "Choose the Country for the transaction" + "\n" + "1. Gabon " + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("3");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        System.out.println("this is the message value:" + message);
+                        map.put("command", 2);
+                    } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+                    }
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("1")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "please enter your eneo bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "please enter your camwater bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "please enter your Guce bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    } else if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 0);
+                        }
+                    }
 
-                } else if (user.getSublevel().equalsIgnoreCase("2")) {
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
 
-                    if (message.equalsIgnoreCase("1")) {
-                        map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "please enter your sagessa bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "please enter your Airtel bill number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message", "please enter your Moov bill number");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 5);
+
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "thanks for using first trust ");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 0);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("command",0);
+                        } else if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }else{
+                            map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+
+                    }
+
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "payment successful");
                         user.setPos("7");
                         user.setPreval("6");
                         user.setMenulevel("3");
-                        user.setSublevel("2");
-                        ;
+                        user.setSublevel("1");
                         usersRepo.save(user);
-                        map.put("command", 6);
+                        map.put("command", 7);
 
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message", "thanks for using first trust "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("7");
-                        user.setPreval("6");
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("1")) {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 7);
+
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message", "thanks for using first trust "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("3");
+                            user.setSublevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 7);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        } else if (message.equalsIgnoreCase("0")) {
+                            map.put("command",0);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("7")) {
+
+                    if (user.getSublevel().equalsIgnoreCase("2")) {
+                        map.put("message", "payment successful");
+                        user.setPos("8");
+                        user.setPreval("7");
                         user.setMenulevel("3");
                         user.setSublevel("2");
                         usersRepo.save(user);
+                        map.put("command",7);
+                    }
+                }
+
+
+            } else if (ml.equalsIgnoreCase("5")) {
+                //loan
+                if (pos.equalsIgnoreCase("1")) {
+                    map.put("message", "choose the type of loan you want " + "\n" + "1. Decouvert" + "\n" + "2. consomation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("5");
+                    //user.setSublevel("2");
+                    usersRepo.save(user);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (message.equalsIgnoreCase("1")) {
+                        map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("5");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("2")) {
+                        map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("5");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
+                    }
+
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        }
+
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "enter the duration for the loan in month"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 3);
+                        }
+
+                    }
+
+                } else if (pos.equalsIgnoreCase("4")) {
+
+                    if (user.getSublevel().equalsIgnoreCase("1")) {
+                        map.put("message", "your account has been credited of 10000FCFA thanks for your trust");
+                        user.setPos("5");
+                        user.setPreval("4");
+                        user.setMenulevel("5");
+                        usersRepo.save(user);
+                        map.put("command", 5);
+                    } else if (user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "how much do you want to borrow:"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("3");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }
+
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        }else {
+                            map.put("message", "come to the agnecy with all the required document for completion and validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("5");
+                            usersRepo.save(user);
+                            map.put("command", 0);
+                        }
+                    }
+                }
+            } else if (ml.equalsIgnoreCase("6")) {
+                if (pos.equalsIgnoreCase("1")) {
+                    map.put("message", "walcome to account management " + "\n" + "1. My language " + "\n" + "2. My transaction" + "\n" + "3. change pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
+                    user.setMenulevel("6");
+                    //user.setSublevel("2");
+                    usersRepo.save(user);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (message.equalsIgnoreCase("1")) {
+                        map.put("message", "change the language here" + "\n" + "1. French " + "\n" + "2. My English"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("1");
+                        usersRepo.save(user);
                         map.put("command", 0);
-                    }
-                }
-            } else if (pos.equalsIgnoreCase("7")) {
-
-                if (user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "payment successful"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("8");
-                    user.setPreval("7");
-                    user.setMenulevel("3");
-                    user.setSublevel("2");
-                    usersRepo.save(user);
-                    map.put("command", 0);
-                }
-            }
-
-
-        } else if (ml.equalsIgnoreCase("5")) {
-            //loan
-            if (pos.equalsIgnoreCase("1")) {
-                map.put("message", "choose the type of loan you want " + "\n" + "1. Decouvert" + "\n" + "2. consomation");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("5");
-                //user.setSublevel("2");
-                usersRepo.save(user);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                if (message.equalsIgnoreCase("1")) {
-                    map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("5");
-                    user.setSublevel("1");
-                    usersRepo.save(user);
-                    map.put("command", 2);
-                } else if (message.equalsIgnoreCase("2")) {
-                    map.put("message", "enter the motif for you borrowing"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("5");
-                    user.setSublevel("2");
-                    usersRepo.save(user);
-                    map.put("command", 2);
-                }
-
-            } else if (pos.equalsIgnoreCase("3")) {
-                if (user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", "enter your pin for validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("4");
-                    user.setPreval("3");
-                    user.setMenulevel("5");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                } else if (user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "enter the duration for the loan in month"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("4");
-                    user.setPreval("3");
-                    user.setMenulevel("5");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-
-                }
-
-            } else if (pos.equalsIgnoreCase("4")) {
-
-                if (user.getSublevel().equalsIgnoreCase("1")) {
-                    map.put("message", "your account has been credited of 10000FCFA thanks for your trust "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("5");
-                    user.setPreval("4");
-                    user.setMenulevel("5");
-                    usersRepo.save(user);
-                    map.put("command", 0);
-                } else if (user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "how much do you want to borrow:"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("5");
-                    user.setPreval("3");
-                    user.setMenulevel("5");
-                    usersRepo.save(user);
-                    map.put("command", 4);
-                }
-            } else if (pos.equalsIgnoreCase("5")) {
-                if (user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message", "come to the agnecy with all the required document for completion and validation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("6");
-                    user.setPreval("5");
-                    user.setMenulevel("5");
-                    usersRepo.save(user);
-                    map.put("command", 0);
-                }
-            }
-        } else if (ml.equalsIgnoreCase("6")) {
-            if (pos.equalsIgnoreCase("1")) {
-                map.put("message", "walcome to account management " + "\n" + "1. My language " + "\n" + "2. My transaction" + "\n" + "3. change pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("6");
-                //user.setSublevel("2");
-                usersRepo.save(user);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                if (message.equalsIgnoreCase("1")) {
-                    map.put("message", "change the language here" + "\n" + "1. French " + "\n" + "2. My English"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("6");
-                    user.setSublevel("1");
-                    usersRepo.save(user);
-                    map.put("command", 0);
-                } else if (message.equalsIgnoreCase("2")) {
-                    map.put("message", "your last transaction" + "\n" + "1. first transaction" + "\n" + "2. second transaction" + "\n" + "3. third transaction" + "\n" + "4. fourth transaction" + "\n" + "5. fifth transaction" +"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("6");
-                    user.setSublevel("2");
-                    usersRepo.save(user);
-                    map.put("command", 1);
-                } else if (message.equalsIgnoreCase("3")) {
-                    map.put("message", "enter your old pin");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("6");
-                    user.setSublevel("3");
-                    usersRepo.save(user);
-                    map.put("command", 2);
-                }
-
-            } else if (pos.equalsIgnoreCase("3")) {
-                if (user.getSublevel().equalsIgnoreCase("3")) {
-                    map.put("message", "enter the new pin ");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("6");
-                    user.setSublevel("3");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                }
-            } else if (pos.equalsIgnoreCase("3")) {
-                if (user.getSublevel().equalsIgnoreCase("3")) {
-                    map.put("message", "confirm by entering again the new pin "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("4");
-                    user.setPreval("3");
-                    user.setMenulevel("6");
-                    user.setSublevel("3");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                }
-            } else if (pos.equalsIgnoreCase("4")) {
-                if (user.getSublevel().equalsIgnoreCase("3")) {
-                    map.put("message", "pin updated succesfully "+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("4");
-                    user.setPreval("3");
-                    user.setMenulevel("6");
-                    user.setSublevel("3");
-                    usersRepo.save(user);
-                    map.put("command", 1);
-                }
-            }
-        }else if (ml.equalsIgnoreCase("4")) {
-            if (pos.equalsIgnoreCase("1")){
-                map.put("message", "entrer le pay ou la zone ou vous voulez transactioner"+"\n"+"1. CAMEROON "+"\n"+"2. other CEMAC country"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                user.setPos("2");
-                user.setPreval("1");
-                user.setMenulevel("4");// keep it to menu message
-                usersRepo.save(user);
-                System.out.println("this is the message value:"+message);
-                map.put("command", 2);
-            } else if (pos.equalsIgnoreCase("2")) {
-                if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")){
-                    map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. orange "+"\n"+"2. mtn"+"\n"+"3. Camtel"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setSublevel("1");
-                    user.setMenulevel("4");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                } else if (pos.equalsIgnoreCase("2")&& (message.equalsIgnoreCase("2")) ){
-                    map.put("message","choose the country for the transaction"+"\n"+"1. TCHAD "+"\n"+"2. GABON"+"\n"+"3. RCA"+"\n"+"4. CONGO"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("3");
-                    user.setPreval("2");
-                    user.setMenulevel("4");
-                    user.setSublevel("2");
-                    usersRepo.save(user);
-                    map.put("command", 3);
-                }
-            } else if (pos.equalsIgnoreCase("3")) {
-                String st = user.getSublevel();
-                if (st.equalsIgnoreCase("1")){
-                    if(message.equalsIgnoreCase("1")){
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command", 4);
                     } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
+                        map.put("message", "your last transaction" + "\n" + "1. first transaction" + "\n" + "2. second transaction" + "\n" + "3. third transaction" + "\n" + "4. fourth transaction" + "\n" + "5. fifth transaction" +"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("2");
                         usersRepo.save(user);
-                        map.put("command", 4);
+                        map.put("command", 1);
                     } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
+                        map.put("message", "enter your old pin");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
                         usersRepo.save(user);
-                        map.put("command", 4);
+                        map.put("command", 2);
+                    } else if (message.equalsIgnoreCase("9999")) {
+                        map.put("command", 1);
                     }
-                } else if (st.equalsIgnoreCase("2")) {
-                    if (message.equalsIgnoreCase("1")){
-                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    }else if (message.equalsIgnoreCase("3")) {
-                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    }else if (message.equalsIgnoreCase("4")) {
-                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command", 4);
-                    }
-                }
-            } else if (pos.equalsIgnoreCase("4")) {
-                if(pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("1")){
-                    map.put("message","please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("5");
-                    user.setPreval("4");
-                    user.setTranstel(message);
-                    user.setMenulevel("4");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command",5);
-                } else if (pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("2")) {
-                    if(message.equalsIgnoreCase("1")){
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command",5);
-                    } else if (message.equalsIgnoreCase("2")) {
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setMenulevel("4");
-                        user.setPreval("4");
-                        usersRepo.save(user);
-                        map.put("command",5);
-                    } else if (message.equalsIgnoreCase("3")) {
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                        user.setPos("5");
-                        user.setPreval("4");
-                        user.setMenulevel("4");
-                        usersRepo.save(user);
-                        map.put("command",5);
 
-                    } else if (message.equalsIgnoreCase("4")) {
-                        map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                } else if (pos.equalsIgnoreCase("3")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "enter the new pin");
+                        user.setPos("4");
+                        user.setPreval("3");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    }else if (user.getSublevel().equalsIgnoreCase("1")){
+                        System.out.println("hello change language ");
+                        if (message.equalsIgnoreCase("1")){
+                            user.setPos("1");
+                            user.setPreval("0");
+                            user.setMenulevel("6");
+                            user.setSublevel("1");
+                            user.setLanguage("1");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            user.setLanguage("0");
+                            user.setPos("1");
+                            user.setPreval("0");
+                            user.setMenulevel("6");
+                            user.setSublevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "confirm by entering again the new pin ");
                         user.setPos("5");
                         user.setPreval("4");
-                        user.setMenulevel("4");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
                         usersRepo.save(user);
-                        map.put("command",5);
+                        map.put("command", 3);
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (user.getSublevel().equalsIgnoreCase("3")) {
+                        map.put("message", "pin updated succesfully");
+                        user.setPos("4");
+                        user.setPreval("3");
+                        user.setMenulevel("6");
+                        user.setSublevel("3");
+                        usersRepo.save(user);
+                        map.put("command", 1);
                     }
                 }
-            } else if (pos.equalsIgnoreCase("5")) {
-                if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")){
-                    map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("6");
-                    user.setPreval("5");
-                    user.setMenulevel("4");
-                    usersRepo.save(user);
-                    map.put("command",6);
-                } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message","enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("6");
-                    user.setPreval("5");
-                    user.setMenulevel("4");
-                    user.setTranstel(message);
-                    usersRepo.save(user);
-                    map.put("command",6);
-                }
-            } else if (pos.equalsIgnoreCase("6")) {
-                if(pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("1")){
-                    map.put("message","transaction successfull"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("7");
-                    user.setPreval("6");
+            }else if (ml.equalsIgnoreCase("4")) {
+                if (pos.equalsIgnoreCase("1")){
+                    map.put("message", "entrer le pay ou la zone ou vous voulez transactioner"+"\n"+"1. CAMEROON "+"\n"+"2. other CEMAC country"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                    user.setPos("2");
+                    user.setPreval("1");
                     user.setMenulevel("4");// keep it to menu message
                     usersRepo.save(user);
-                    map.put("command",7);
-                } else if (pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("2")) {
-                    map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("7");
-                    user.setPreval("6");
-                    user.setTranstel(message);
-                    user.setMenulevel("4");// keep it to menu message
-                    usersRepo.save(user);
-                    map.put("command",7);
-                }
-            }else  if (pos.equalsIgnoreCase("7")){
-                if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
-                    map.put("message","transaction successfull thanks for trust"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
-                    user.setPos("8");
-                    map.put("command",8);
+                    System.out.println("this is the message value:"+message);
+                    map.put("command", 2);
+                } else if (pos.equalsIgnoreCase("2")) {
+                    if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("1")){
+                        map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. orange "+"\n"+"2. mtn"+"\n"+"3. Camtel"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setSublevel("1");
+                        user.setMenulevel("4");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    } else if (pos.equalsIgnoreCase("2")&& (message.equalsIgnoreCase("2")) ){
+                        map.put("message","choose the country for the transaction"+"\n"+"1. TCHAD "+"\n"+"2. GABON"+"\n"+"3. RCA"+"\n"+"4. CONGO"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                        user.setPos("3");
+                        user.setPreval("2");
+                        user.setMenulevel("4");
+                        user.setSublevel("2");
+                        usersRepo.save(user);
+                        map.put("command", 3);
+                    } else if (pos.equalsIgnoreCase("2")&& (message.equalsIgnoreCase("9999"))) {
+                        map.put("command",1);
+                    }
+                } else if (pos.equalsIgnoreCase("3")) {
+                    String st = user.getSublevel();
+                    if (st.equalsIgnoreCase("1")){
+                        if(message.equalsIgnoreCase("1")){
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        }
+                    } else if (st.equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")){
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        }else if (message.equalsIgnoreCase("4")) {
+                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command", 4);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command", 1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("4")) {
+                    if(pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command", 1);
+                        } else  {
+                            map.put("message","please enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setTranstel(message);
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("4")&& user.getSublevel().equalsIgnoreCase("2")) {
+                        if(message.equalsIgnoreCase("1")){
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("2")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setMenulevel("4");
+                            user.setPreval("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("3")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+
+                        } else if (message.equalsIgnoreCase("4")) {
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("5");
+                            user.setPreval("4");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",5);
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            map.put("command",1);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("5")) {
+                    if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        }else {
+                            map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("4");
+                            usersRepo.save(user);
+                            map.put("command",6);
+                        }
+
+                    } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
+
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        }else {
+                            map.put("message","enter the amount to transfer"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("6");
+                            user.setPreval("5");
+                            user.setMenulevel("4");
+                            user.setTranstel(message);
+                            usersRepo.save(user);
+                            map.put("command",6);
+                        }
+                    }
+                } else if (pos.equalsIgnoreCase("6")) {
+                    if(pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("1")){
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        } else {
+                            map.put("message","transaction successfull"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",7);
+                        }
+                    } else if (pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("9999")){
+                            map.put("command",1);
+                        } else {
+                            map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            user.setPos("7");
+                            user.setPreval("6");
+                            user.setTranstel(message);
+                            user.setMenulevel("4");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command",7);
+                        }
+
+                    }
+                }else  if (pos.equalsIgnoreCase("7")){
+                    if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
+                        map.put("message","transaction successfull thanks for trust");
+                        user.setPos("8");
+                        map.put("command",8);
+                    }
                 }
             }
+
         }
-
+        //boundaries stop
 
     } else {
             // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
             System.out.println("hello2");
+                UserSession user2 = new UserSession();
+                user2.setMenulevel("0");
+                user2.setUuid(sessionid);
+                user2.setPhone(msisdn);
+                user2.setProvider(provider);
+                user2.setLanguage("1");// for french language default
+                user2.setPos("1");
+                usersRepo.save(user2);
+
+        UserSession user23 =usersRepo.findClientByPhoneAndUuid(msisdn,sessionid);
+        if (user23.getLanguage().equalsIgnoreCase("1")){
             String menu_elements = this.getValueByKey("menu_head", labels)[1];
             for (Ussdfirstpage elements : sortedmenu) {
                 int va = elements.getRang();
+
                 menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+
+                //menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
             }
             text = menu_elements;
-          
+
             map.put("message", text);
             map.put("command", 1);
-           UserSession user2 = new UserSession();
-           user2.setMenulevel("0");
-           user2.setUuid(sessionid);
-           user2.setPhone(msisdn);
-           user2.setProvider(provider);
-           user2.setPos("1");
-           usersRepo.save(user2);
+
+        }else if (user23.getLanguage().equalsIgnoreCase("0")) {
+            String menu_elements = this.getValueByKey("menu_head", labels)[0];
+            for (Ussdfirstpage elements : sortedmenu) {
+                int va = elements.getRang();
+
+                menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
+
+                //menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
+            }
+            text = menu_elements;
+
+            map.put("message", text);
+            map.put("command", 1);
+
+        }
+            //String menu_elements = this.getValueByKey("menu_head", labels)[1];
+
             // }
         }
 
