@@ -51,11 +51,14 @@ public class UserSession implements Serializable{
     public String acc;//json array
     
     public String dele;
-
+    public int max; // max trial test case
+    public int iterator; // iterator for counts
     public String menulevel;
      public String provider;
      public String transtel;
    public  String Amount;
+   public String billnum;
+
     public  String sublevel;
     public  String sublevel2;
     public  String pin;
