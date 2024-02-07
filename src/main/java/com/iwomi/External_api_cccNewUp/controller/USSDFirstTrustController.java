@@ -271,9 +271,9 @@ public class USSDFirstTrustController {
             String ml = user.getMenulevel();
 
             if (ml.equalsIgnoreCase("1")) {
-                System.out.println("this step is ok ml level");
+               // System.out.println("this step is ok ml level");
                 if (pos.equalsIgnoreCase("1")) {
-                    System.out.println("this step is ok pos level1" + pos);
+                   // System.out.println("this step is ok pos level1" + pos);
                     // Making a transaction gos here
                     map.put("message", "entrer le pay ou la zone ou vous voulez transactioner" + "\n" + "1. firsttrust a firsttrust" + "\n" + "2. Autre cameroon" + "\n" + "3. Autre CEMAC" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                     user.setPos("2");
@@ -537,7 +537,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 3);
                         }
-                        System.out.println("pos 4 level");
+                        System.out.println("pos 4 level 33");
                     }
 
                 } else if (pos.equalsIgnoreCase("4")) {
@@ -565,8 +565,12 @@ public class USSDFirstTrustController {
                             map.put("command", 4);
 
                         } else {
+                            System.out.println("hello test pos 4 ");
                             Map<String,Object> verif = amounttest(message,max1,iter1);
-                            if (verif.get("result").toString().equalsIgnoreCase("ok")) {
+                            if (verif.get("result").toString().equalsIgnoreCase("ok")){
+                                System.out.println("value of result :"+verif.get("result"));
+                                System.out.println("hello test pos 4  see steve1");
+                                System.out.println("hello test pos 4 steve2");
                                 map.put("message", " you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                                 user.setPos("5");
                                 user.setAmount(message);
@@ -590,6 +594,7 @@ public class USSDFirstTrustController {
                                     map.put("command", 4);
                                 }
                             }
+
                         }
 
                     } else if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("2")) {
@@ -614,6 +619,7 @@ public class USSDFirstTrustController {
                             user.setMenulevel("1");// keep it to menu message
                             usersRepo.save(user);
                             map.put("command", 4);
+
                         }else {
                             Map<String, Object> verif = numberTestCM(message, max1, iter1);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
@@ -3293,13 +3299,16 @@ public class USSDFirstTrustController {
     public Map<String,Object> numberTestOthers(String number,int max,int iter) {
        return testRegularExpression2("^\\d{3}6\\d{8}$", number,max,iter);
     }
-    public Map<String,Object> amounttest(String amount,int iter,int max) {
+    public Map<String,Object> amounttest(String amount,int max,int iter) {
         // Verification of the amount to verify
-         return testRegularExpression("\\d+", amount, max, iter);
+         return testRegularExpressiontest("^\\d+(\\.\\d+)?$", amount, max, iter);
     }
     public  Map<String,Object> pinverifiaction(String PIN,int max, int iter) {
+     // verification of PIN
       return  testRegularExpression1("\\d{4}$", PIN, max, iter);
+
     }
+
     //for checking PIN
     private Map<String,Object> testRegularExpression1(String regex, String testString, int maxTrial, int iter) {
         Pattern pattern = Pattern.compile(regex);
@@ -3378,7 +3387,32 @@ public class USSDFirstTrustController {
         return res;
 
     }
-    
+
+    private Map<String,Object> testRegularExpressiontest(String regex, String amount, int maxTrial, int iter) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(amount);
+        Map<String,Object> res =new HashMap<>();
+
+        if(iter<maxTrial+1) {
+            if (matcher.matches()) {
+                //System.out.println("String '" + testString + "\n");
+                String result = "ok";
+                res.put("result",result);
+            } else  {
+                int ts =maxTrial-iter;
+                String mess=  " invalid amount, enter only digits ," + ts + " attempts remaining." ;
+                String result = "ok1";
+                res.put("result",result);
+                res.put("textformat",mess);
+            }
+
+        }else {
+            res.put("result","number of trials exceeded");
+        }
+        return res;
+
+    }
+
     public Map<String, Object> checkPayload(Map<String, Object> payload, String key) {
         if (!payload.containsKey(key)) {
             payload.put(key, "");
