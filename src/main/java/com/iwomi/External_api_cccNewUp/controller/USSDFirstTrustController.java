@@ -256,6 +256,8 @@ public class USSDFirstTrustController {
 
         int max1 = user.getMax();
         int iter1= user.getIterator();
+        int iter2= user.getIteratorAMT();
+        int iter3= user.getIteratorPIN();
 
         //booundaries start
         //french language translation
@@ -566,7 +568,7 @@ public class USSDFirstTrustController {
 
                         } else {
                             System.out.println("hello test pos 4 ");
-                            Map<String,Object> verif = amounttest(message,max1,iter1);
+                            Map<String,Object> verif = amounttest(message,max1,iter2);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 System.out.println("value of result :"+verif.get("result"));
                                 System.out.println("hello test pos 4  see steve1");
@@ -580,14 +582,14 @@ public class USSDFirstTrustController {
                                 map.put("command", 5);
 
                             } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                                if (max1 == iter1) {
+                                if (max1 == iter2) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("4");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorAMT(iter2 + 1);
                                     user.setPreval("3");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
@@ -711,19 +713,19 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 5);
                         }else {
-                            Map<String, Object> verif= pinverifiaction(message,max1,iter1);
+                            Map<String, Object> verif= pinverifiaction(message,max1,iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "transaction successfull");
                                 map.put("command", 6);
                             }else {
-                                if (max1 == iter1) {
+                                if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("5");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorPIN(iter3 + 1);
                                     user.setPreval("4");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
@@ -759,7 +761,7 @@ public class USSDFirstTrustController {
                             map.put("command", 5);
 
                         }else{
-                            Map<String, Object> verif = amounttest(message, max1, iter1);
+                            Map<String, Object> verif = amounttest(message, max1, iter2);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
                                 map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                                 user.setPos("6");
@@ -769,14 +771,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 6);
                             }else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
-                                if (max1 == iter1) {
+                                if (max1 == iter2) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("4");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorAMT(iter2 + 1);
                                     user.setPreval("3");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
@@ -845,7 +847,7 @@ public class USSDFirstTrustController {
                             map.put("command", 6);
 
                         }else {
-                            Map<String, Object> verif = pinverifiaction(message, max1, iter1);
+                            Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "transaction successfull");
                                 user.setPos("7");
@@ -854,14 +856,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 7);
                             }else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
-                                if (max1 == iter1) {
+                                if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("6");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorPIN(iter3 + 1);
                                     user.setPreval("5");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
@@ -893,7 +895,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 6);
                         }else{
-                            Map<String, Object> verif = amounttest(message, max1, iter1);
+                            Map<String, Object> verif = amounttest(message, max1, iter2);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "you want to send xxxxxx to XXXXX XXXXXXX enter your pin for confirmation"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                                 user.setPos("7");
@@ -903,14 +905,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 7);
                             }else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
-                                if (max1 == iter1) {
+                                if (max1 == iter2) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("6");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorAMT(iter2 + 1);
                                     user.setPreval("5");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
@@ -923,19 +925,19 @@ public class USSDFirstTrustController {
 
                 } else if (pos.equalsIgnoreCase("7")) {
                     if (pos.equalsIgnoreCase("7") && user.getSublevel().equalsIgnoreCase("3")) {
-                        Map<String, Object> verif = pinverifiaction(message, max1, iter1);
+                        Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                         if (verif.get("result").toString().equalsIgnoreCase("ok")){
                             map.put("message", "transaction successfull thanks for trust");
                             map.put("command", 8);
                         }else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
-                            if (max1 == iter1) {
+                            if (max1 == iter3) {
                                 map.put("message", verif.get("result").toString());
                                 map.put("command", 0);
                             } else {
                                 String lastms = verif.get("textformat").toString();
                                 map.put("message", lastms);
                                 user.setPos("7");
-                                user.setIterator(iter1 + 1);
+                                user.setIteratorPIN(iter3 + 1);
                                 user.setPreval("6");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
@@ -984,7 +986,7 @@ public class USSDFirstTrustController {
                         usersRepo.save(user);
                         map.put("command", 1);
                     } else{
-                        Map<String, Object> verif = pinverifiaction(message, max1, iter1);
+                        Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                         if (verif.get("result").toString().equalsIgnoreCase("ok")){
                             map.put("message", "you have 50000FCFA in your account"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("3");
@@ -993,14 +995,14 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 3);
                         }else if(verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                            if (max1 == iter1) {
+                            if (max1 == iter3) {
                                 map.put("message", verif.get("result").toString());
                                 map.put("command", 0);
                             } else {
                                 String lastms = verif.get("textformat").toString();
                                 map.put("message", lastms);
                                 user.setPos("2");
-                                user.setIterator(iter1 + 1);
+                                user.setIteratorPIN(iter3 + 1);
                                 user.setPreval("1");
                                 user.setMenulevel("2");
                                 usersRepo.save(user);
@@ -1275,7 +1277,7 @@ public class USSDFirstTrustController {
                         map.put("command", 5);
 
                         } else  {
-                            Map<String,Object> verif = pinverifiaction(message,max1,iter1);
+                            Map<String,Object> verif = pinverifiaction(message,max1,iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "payment successful");
                                 user.setPos("6");
@@ -1285,14 +1287,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 6);
                             } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                                if (max1 == iter1) {
+                                if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("5");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorPIN(iter3 + 1);
                                     user.setPreval("4");
                                     user.setMenulevel("3");
                                     usersRepo.save(user);
@@ -1358,7 +1360,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 2);
                         } else  {
-                            Map<String,Object> verif = pinverifiaction(message,max1,iter1);
+                            Map<String,Object> verif = pinverifiaction(message,max1,iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "payment successful");
                                 user.setPos("7");
@@ -1368,14 +1370,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 7);
                             } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                                if (max1 == iter1) {
+                                if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("6");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorPIN(iter3 + 1);
                                     user.setPreval("5");
                                     user.setMenulevel("3");
                                     usersRepo.save(user);
@@ -1519,7 +1521,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 4);
                         }else{
-                            Map<String,Object> verif = pinverifiaction(message,max1,iter1);
+                            Map<String,Object> verif = pinverifiaction(message,max1,iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message", "your account has been credited of 10000FCFA thanks for your trust");
                                 user.setPos("5");
@@ -1528,14 +1530,14 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 5);
                             } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                                if (max1 == iter1) {
+                                if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
                                 } else {
                                     String lastms = verif.get("textformat").toString();
                                     map.put("message", lastms);
                                     user.setPos("3");
-                                    user.setIterator(iter1 + 1);
+                                    user.setIteratorPIN(iter3 + 1);
                                     user.setPreval("2");
                                     user.setMenulevel("3");
                                     usersRepo.save(user);
@@ -1678,7 +1680,7 @@ public class USSDFirstTrustController {
 
                 } else if (pos.equalsIgnoreCase("3")) {
                     if (user.getSublevel().equalsIgnoreCase("3")) {
-                        Map<String,Object> verif = pinverifiaction(message,max1,iter1);
+                        Map<String,Object> verif = pinverifiaction(message,max1,iter3);
                         if (verif.get("result").toString().equalsIgnoreCase("ok")){
                             map.put("message", "enter the new pin");
                             user.setPos("4");
@@ -1688,14 +1690,14 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 3);
                         } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
-                        if (max1 == iter1) {
+                        if (max1 == iter3) {
                             map.put("message", verif.get("result").toString());
                             map.put("command", 0);
                         } else {
                             String lastms = verif.get("textformat").toString();
                             map.put("message", lastms);
                             user.setPos("3");
-                            user.setIterator(iter1 + 1);
+                            user.setIteratorPIN(iter3 + 1);
                             user.setPreval("2");
                             user.setMenulevel("3");
                             usersRepo.save(user);
@@ -1743,6 +1745,7 @@ public class USSDFirstTrustController {
                         map.put("command", 1);
                     }
                 }
+
             }else if (ml.equalsIgnoreCase("4")) {
                 if (pos.equalsIgnoreCase("1")){
                     map.put("message", "entrer le pay ou la zone ou vous voulez transactioner"+"\n"+"1. CAMEROON "+"\n"+"2. other CEMAC country"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
@@ -1805,18 +1808,21 @@ public class USSDFirstTrustController {
                         if(message.equalsIgnoreCase("1")){
                             map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
                         } else if (message.equalsIgnoreCase("2")) {
                             map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
                         } else if (message.equalsIgnoreCase("3")) {
                             map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
@@ -1837,6 +1843,7 @@ public class USSDFirstTrustController {
                         } else if (message.equalsIgnoreCase("7777")) {
                             map.put("message", "entrer le pay ou la zone ou vous voulez transactioner"+"\n"+"1. CAMEROON "+"\n"+"2. other CEMAC country"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("2");
+                            user.setPreval("1");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 3);
@@ -1845,24 +1852,28 @@ public class USSDFirstTrustController {
                         if (message.equalsIgnoreCase("1")){
                             map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
                         } else if (message.equalsIgnoreCase("2")) {
                             map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
                         }else if (message.equalsIgnoreCase("3")) {
                             map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
                         }else if (message.equalsIgnoreCase("4")) {
                             map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. MOOV "+"\n"+"2. Airtel "+"\n"+"3. Autres"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
+                            user.setPreval("3");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
@@ -1907,9 +1918,12 @@ public class USSDFirstTrustController {
                         }else  if (message.equalsIgnoreCase("7777")){
                             map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. orange "+"\n"+"2. mtn"+"\n"+"3. Camtel"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("3");
+                            user.setPreval("2");
+                            user.setSublevel("1");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 4);
+
                         } else  {
                             Map<String,Object> verif = numberTestCM(message,max1,iter1);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
@@ -1927,13 +1941,13 @@ public class USSDFirstTrustController {
                             } else {
                                 String lastms = verif.get("textformat").toString();
                                 map.put("message", lastms);
-                                user.setPos("3");
+                                user.setPos("4");
                                 user.setIterator(iter1 + 1);
-                                user.setPreval("2");
-                                user.setMenulevel("3");
+                                user.setPreval("3");
+                                user.setMenulevel("4");
                                 usersRepo.save(user);
                                 map.put("command", 2);
-                            }
+                                }
 
                             }
 
@@ -1943,6 +1957,7 @@ public class USSDFirstTrustController {
                         if(message.equalsIgnoreCase("1")){
                             map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("5");
+                            user.setPreval("4");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command",5);
@@ -1989,6 +2004,7 @@ public class USSDFirstTrustController {
                             map.put("command", 4);
                         }
                     }
+
                 } else if (pos.equalsIgnoreCase("5")) {
                     if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("1")){
                         if (message.equalsIgnoreCase("9999")){
@@ -2005,15 +2021,18 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 2);
                         }else if (message.equalsIgnoreCase("7777")){
-                            map.put("message","choose the operator to whom you want to transfert"+"\n"+"1. orange "+"\n"+"2. mtn"+"\n"+"3. Camtel"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            map.put("message","enter a phone number"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("4");
                             user.setMenulevel("4");
                             usersRepo.save(user);
                             map.put("command", 5);
+
                         }else {
-                            if (user.getSublevel().equalsIgnoreCase("3")) {
-                                Map<String, Object> verif = amounttest(message, max1, iter1);
-                                if (verif.get("result").toString().equalsIgnoreCase("ok")) {
+                                System.out.println("this is the message value:"+message);
+                                System.out.println("this is the RYAN:"+pos);
+                                Map<String, Object> verif = amounttest(message, max1, iter2);
+                                if ( verif.get("result").toString().equalsIgnoreCase("ok")) {
+                                    System.out.println("3"+verif.get("result"));
                                     map.put("message", "enter your pin" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                     user.setPos("6");
                                     user.setPreval("5");
@@ -2021,21 +2040,22 @@ public class USSDFirstTrustController {
                                     user.setMenulevel("4");
                                     usersRepo.save(user);
                                     map.put("command", 6);
-                                }if (max1 == iter1) {
-                                    map.put("message", verif.get("result").toString());
-                                    map.put("command", 0);
-                                } else {
-                                    String lastms = verif.get("textformat").toString();
-                                    map.put("message", lastms);
-                                    user.setPos("5");
-                                    user.setIterator(iter1 + 1);
-                                    user.setPreval("4");
-                                    user.setMenulevel("4");
-                                    usersRepo.save(user);
-                                    map.put("command", 5);
-
+                                } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
+                                    if (max1 == iter2) {
+                                        map.put("message", verif.get("result").toString());
+                                        map.put("command", 0);
+                                    } else {
+                                        String lastms = verif.get("textformat").toString();
+                                        map.put("message", lastms);
+                                        user.setPos("5");
+                                        user.setIteratorAMT(iter2 + 1);
+                                        user.setPreval("4");
+                                        user.setMenulevel("4");
+                                        usersRepo.save(user);
+                                        map.put("command", 5);
+                                    }
                                 }
-                            }
+
                         }
 
                     } else if (pos.equalsIgnoreCase("5") && user.getSublevel().equalsIgnoreCase("2")) {
@@ -2070,20 +2090,21 @@ public class USSDFirstTrustController {
                                 user.setTranstel(message);
                                 usersRepo.save(user);
                                 map.put("command",6);
-                            }if (max1 == iter1) {
-                                map.put("message", verif.get("result").toString());
-                                map.put("command", 0);
-                            } else {
-                                String lastms = verif.get("textformat").toString();
-                                map.put("message", lastms);
-                                user.setPos("5");
-                                user.setIterator(iter1 + 1);
-                                user.setPreval("4");
-                                user.setMenulevel("4");
-                                usersRepo.save(user);
-                                map.put("command", 5);
+                            }else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
+                                if (max1 == iter1) {
+                                    map.put("message", verif.get("result").toString());
+                                    map.put("command", 0);
+                                } else {
+                                    String lastms = verif.get("textformat").toString();
+                                    map.put("message", lastms);
+                                    user.setPos("5");
+                                    user.setIterator(iter1 + 1);
+                                    user.setPreval("4");
+                                    user.setMenulevel("4");
+                                    usersRepo.save(user);
+                                    map.put("command", 5);
+                                }
                             }
-
                         }
                     }
                 } else if (pos.equalsIgnoreCase("6")) {
@@ -2109,7 +2130,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 6);
                         } else {
-                            Map<String,Object> verif= pinverifiaction(message,max1,iter1);
+                            Map<String,Object> verif= pinverifiaction(message,max1,iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message","transaction successfull"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                                 user.setPos("7");
@@ -2117,20 +2138,21 @@ public class USSDFirstTrustController {
                                 user.setMenulevel("4");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command",7);
-                            }if (max1 == iter1) {
-                                map.put("message", verif.get("result").toString());
-                                map.put("command", 0);
-                            } else {
-                                String lastms = verif.get("textformat").toString();
-                                map.put("message", lastms);
-                                user.setPos("6");
-                                user.setIterator(iter1 + 1);
-                                user.setPreval("5");
-                                user.setMenulevel("4");
-                                usersRepo.save(user);
-                                map.put("command", 6);
+                            } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
+                                if (max1 == iter3) {
+                                    map.put("message", verif.get("result").toString());
+                                    map.put("command", 0);
+                                } else {
+                                    String lastms = verif.get("textformat").toString();
+                                    map.put("message", lastms);
+                                    user.setPos("6");
+                                    user.setIteratorPIN(iter3 + 1);
+                                    user.setPreval("5");
+                                    user.setMenulevel("4");
+                                    usersRepo.save(user);
+                                    map.put("command", 6);
+                                }
                             }
-
                         }
                     } else if (pos.equalsIgnoreCase("6")&& user.getSublevel().equalsIgnoreCase("2")) {
                         if (message.equalsIgnoreCase("9999")){
@@ -2155,7 +2177,7 @@ public class USSDFirstTrustController {
                             map.put("command", 6);
 
                         } else {
-                            Map<String,Object> verif= amounttest(message,max1,iter1);
+                            Map<String,Object> verif= amounttest(message,max1,iter2);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")){
                                 map.put("message","enter your pin"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                                 user.setPos("7");
@@ -2164,43 +2186,45 @@ public class USSDFirstTrustController {
                                 user.setMenulevel("4");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command",7);
-                            }if (max1 == iter1) {
+                            } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
+                                if (max1 == iter2) {
+                                    map.put("message", verif.get("result").toString());
+                                    map.put("command", 0);
+                                } else {
+                                    String lastms = verif.get("textformat").toString();
+                                    map.put("message", lastms);
+                                    user.setPos("6");
+                                    user.setIteratorAMT(iter2 + 1);
+                                    user.setPreval("5");
+                                    user.setMenulevel("4");
+                                    usersRepo.save(user);
+                                    map.put("command", 6);
+                                }
+                            }
+                        }
+                    }
+                }else  if (pos.equalsIgnoreCase("7")){
+                    if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
+                        Map<String,Object> verif= pinverifiaction(message,max1,iter3);
+                        if (verif.get("result").toString().equalsIgnoreCase("ok")) {
+                            map.put("message","transaction successfull thanks for trust");
+                            user.setPos("8");
+                            map.put("command",8);
+                        } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
+                            if (max1 == iter3) {
                                 map.put("message", verif.get("result").toString());
                                 map.put("command", 0);
                             } else {
                                 String lastms = verif.get("textformat").toString();
                                 map.put("message", lastms);
-                                user.setPos("6");
-                                user.setIterator(iter1 + 1);
-                                user.setPreval("5");
+                                user.setPos("7");
+                                user.setIteratorPIN(iter3 + 1);
+                                user.setPreval("6");
                                 user.setMenulevel("4");
                                 usersRepo.save(user);
-                                map.put("command", 6);
+                                map.put("command", 7);
                             }
                         }
-
-                    }
-                }else  if (pos.equalsIgnoreCase("7")){
-                    if(pos.equalsIgnoreCase("7")&& user.getSublevel().equalsIgnoreCase("2")){
-                        Map<String,Object> verif= pinverifiaction(message,max1,iter1);
-                        if (verif.get("result").toString().equalsIgnoreCase("ok")) {
-                            map.put("message","transaction successfull thanks for trust");
-                            user.setPos("8");
-                            map.put("command",8);
-                        }if (max1 == iter1) {
-                            map.put("message", verif.get("result").toString());
-                            map.put("command", 0);
-                        } else {
-                            String lastms = verif.get("textformat").toString();
-                            map.put("message", lastms);
-                            user.setPos("7");
-                            user.setIterator(iter1 + 1);
-                            user.setPreval("6");
-                            user.setMenulevel("4");
-                            usersRepo.save(user);
-                            map.put("command", 7);
-                        }
-
                     }
                 }
             }
@@ -3156,6 +3180,8 @@ public class USSDFirstTrustController {
                 user2.setUuid(sessionid);
                 user2.setPhone(msisdn);
                 user2.setMax(3);
+                user2.setIteratorPIN(1);
+                user2.setIteratorAMT(1);
                 user2.setIterator(1);
                 user2.setProvider(provider);
                 user2.setLanguage("1");// for french language default

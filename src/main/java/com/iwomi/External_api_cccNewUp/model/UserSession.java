@@ -53,6 +53,8 @@ public class UserSession implements Serializable{
     public String dele;
     public int max; // max trial test case
     public int iterator; // iterator for counts
+    public int iteratorPIN;
+    public int iteratorAMT;
     public String menulevel;
      public String provider;
      public String transtel;
