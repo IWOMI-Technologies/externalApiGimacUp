@@ -245,6 +245,11 @@ public class USSDFirstTrustController {
          UserSession user = usersRepo.findClientByPhoneAndUuid(msisdn,sessionid);
         // would check the default language and know which message to display
 
+        Map<String, String> solde = new HashMap<>();
+        solde = ussdFirstTrustService.getSolde("0000","0000","àààà");
+
+        Map<String, String> checkpin = new HashMap<>();
+        checkpin  = ussdFirstTrustService.CheckPin("694568752","0000");
 
         String text = "";
         String dele= "0";
@@ -988,7 +993,7 @@ public class USSDFirstTrustController {
                     } else{
                         Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                         if (verif.get("result").toString().equalsIgnoreCase("ok")){
-                            map.put("message", "you have 50000FCFA in your account"+"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
+                            map.put("message", solde +"\n"+"7777. precedent"+"\n"+"9999 . HOME"+"\n"+"0. Exit"+"\n");
                             user.setPos("3");
                             user.setPreval("2");
                             user.setMenulevel("2");// keep it to menu message
@@ -3332,7 +3337,6 @@ public class USSDFirstTrustController {
     public  Map<String,Object> pinverifiaction(String PIN,int max, int iter) {
      // verification of PIN
       return  testRegularExpression1("\\d{4}$", PIN, max, iter);
-
     }
 
     //for checking PIN
@@ -3439,6 +3443,26 @@ public class USSDFirstTrustController {
 
     }
 
+    @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
+    public Map<String, String> getwalletInquiry(@RequestBody Map<String, String>payload){
+          return ussdFirstTrustService.getSolde("001", "0118004", "18004");
+    }
+    @RequestMapping(value = "/requestpayment",method = RequestMethod.POST)
+    public Map<String, String> requestPaiement(@RequestBody Map<String, Object> payload) {
+        return ussdFirstTrustService.addListPaiement("001", "0118004", "18004");
+    }
+    @RequestMapping(value = "/getwalletinq2",method = RequestMethod.POST)
+    public Map<String, String> getwalletinq2(@RequestBody Map<String, Object> payload){
+        return ussdFirstTrustService.getcptByTel("001","0118004", "18004");
+    }
+    @RequestMapping(value = "/billInquiry",method = RequestMethod.POST)
+    public Map<String,String> billinquiry(@RequestBody Map<String, Object> payload){
+          return ussdFirstTrustService.billdetails("001","0118004", "18004");
+    }
+    @RequestMapping(value = "/checkPinU",method = RequestMethod.POST)
+    public Map<String,String> checkPinU(@RequestBody Map<String, Object> payload){
+        return ussdFirstTrustService.CheckPin("694568752","1234");
+    }
     public Map<String, Object> checkPayload(Map<String, Object> payload, String key) {
         if (!payload.containsKey(key)) {
             payload.put(key, "");
