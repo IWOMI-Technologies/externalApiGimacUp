@@ -6,8 +6,10 @@ package com.iwomi.External_api_cccNewUp.ussd.service;
 
 import com.iwomi.External_api_cccNewUp.model.Nomenclature;
 import com.iwomi.External_api_cccNewUp.repository.NomenclatureRepository;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.JSONObject;
@@ -15,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author TAGNE
  */
 @Service
@@ -63,37 +64,12 @@ public class UssdFirstTrustService {
     }
 
     public Map<String, String> getSolde(String etab, String cli, String cpt) {
-        Map<String, Object> res = new HashMap<>();
-        res.put("etab", etab);
+        Map<String, String> res = new HashMap<>();
+       // res.put("etab", etab);
         res.put("cli", cli);
         res.put("cpt", cpt);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel="http://localhost:8084/";
-        Unirest.config().verifySsl(false);
-        HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getSoldeU")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body(res)
-                .asString();
-        Map<String, String> resp = new HashMap<>();
-        System.out.println("body :" + response.getBody());
-        if (response.getStatus() == 200) {
-            System.out.println("Token :" + response.getBody());
-            resp.put("status", "01");
-            resp.put("data", response.getBody());
-        } else {
-            resp.put("status", "100");
-            resp.put("data", response.getBody());
-        }
-        return resp;
-    }
-
-    public Map<String, String> getcptByTel( String etab, String cli, String cpt) {
-        Map<String,Object> res =new HashMap<>();
-        res.put("etab",etab);
-        res.put("cli",cli);
-        res.put("cpt",cpt);
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel="http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getSolde")
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -112,15 +88,38 @@ public class UssdFirstTrustService {
         return resp;
     }
 
-    public Map<String,String> addListPaiement(String etab, String cli, String cpt){
-        Map<String,Object> response = new HashMap<>();
-        response.put("etab",etab);
-        response.put("cli",cli);
-        response.put("cpt",cpt);
-       //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel="http://localhost:8084/";
+    public Map<String, Object> getcptByTel(String telephone) {
+        Map<String,String> res = new HashMap<>();
+        res.put("telephone", telephone);
+        String baseUrel="http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         Unirest.config().verifySsl(false);
-        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/requestPaiementU")
+        HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getTelephone")
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .body(res)
+                .asString();
+        Map<String,Object> resp = new HashMap<>();
+        System.out.println("body :" + response.getBody());
+        if (response.getStatus() == 200) {
+            System.out.println("Token :" + response.getBody());
+            resp.put("status", "01");
+            resp.put("data", response.getBody());
+        } else {
+            resp.put("status", "100");
+            resp.put("data", response.getBody());
+        }
+        return resp;
+    }
+
+    public Map<String, String> addListPaiement(String etab, String cli, String cpt) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("etab", etab);
+        response.put("cli", cli);
+        response.put("cpt", cpt);
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel="http://localhost:8084/";
+        Unirest.config().verifySsl(false);
+        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/requestPaiement")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .body(response)
                 .asString();
@@ -138,14 +137,14 @@ public class UssdFirstTrustService {
     }
 
 
-    public Map<String,String> billdetails (String etab,String cli,String cpt){
-        Map<String,Object> response = new HashMap<>();
-        response.put("etab",etab);
-        response.put("cli",cli);
-        response.put("cpt",cpt);
-       // response.put("tel", user.getTranstel);
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel="http://localhost:8084/";
+    public Map<String, String> billdetails(String etab, String cli, String cpt) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("etab", etab);
+        response.put("cli", cli);
+        response.put("cpt", cpt);
+        // response.put("tel", user.getTranstel);
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel="http://localhost:8084/";
         Unirest.config().verifySsl(false);
         HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/getBillToPay")
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -162,16 +161,16 @@ public class UssdFirstTrustService {
             resp.put("data", res.getBody());
         }
         return resp;
-   }
+    }
 
-    public Map<String, String>CheckPin(String tel,String Pin){
-        Map<String,Object> response = new HashMap<>();
-        response.put("tel",tel);
-        response.put("Pin",Pin);
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel="http://localhost:8084/";
+    public Map<String, String> CheckPin (String tel, String Pin) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("tel", tel);
+        response.put("Pin", Pin);
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel="http://localhost:8084/";
         Unirest.config().verifySsl(false);
-        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/checkPinU")
+        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/checkPin")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .body(response)
                 .asString();
@@ -186,6 +185,6 @@ public class UssdFirstTrustService {
             resp.put("data", res.getBody());
         }
         return resp;
-        }
     }
+}
 
