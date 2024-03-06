@@ -3455,16 +3455,18 @@ public class USSDFirstTrustController {
     @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
     public Map<String, String> getwalletInquiry1(@RequestBody Map<String, String> payload) {
         Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
+        Object ls = obj.get("data");
+
         System.out.println(obj);
         return ussdFirstTrustService.getSolde( obj.get("cli").toString(),  obj.get("cpt").toString());
     }
 
-    @RequestMapping(value = "/byphone", method = RequestMethod.POST)
+   /* @RequestMapping(value = "/byphone", method = RequestMethod.POST)
     public Map<String, Object> getwallet(@RequestBody Map<String, String> payload) {
         Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
         System.out.println(obj);
         return obj;
-    }
+    }*/
 
     @RequestMapping(value = "/requestpayment", method = RequestMethod.POST)
     public Map<String, String> requestPaiement(@RequestBody Map<String, Object> payload) {

@@ -14,7 +14,12 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author TAGNE
@@ -93,17 +98,26 @@ public class UssdFirstTrustService {
         res.put("telephone", telephone);
         //String baseUrel="http://192.168.30.59:8084/";
         String baseUrel = "http://localhost:8084/";
-        Unirest.config().verifySsl(false);
-        HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getTelephone")
-                .header("Content-Type", "application/x-www-form-urlencoded")
+       /* Unirest.config().verifySsl(false);
+        HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
+                .header("Content-Type", "application/json")
                 .body(res)
-                .asString();
+                .asString();*/
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(res,headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getTelephone", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
         Map<String,Object> resp = new HashMap<>();
         System.out.println("body :" + response.getBody());
-        if (response.getStatus() == 200) {
+        response.getStatusCode();
+        if(response.getStatusCodeValue() == 200) {
             System.out.println("Token :" + response.getBody());
             resp.put("status", "01");
             resp.put("data", response.getBody());
+
+
         } else {
             resp.put("status", "100");
             resp.put("data", response.getBody());
