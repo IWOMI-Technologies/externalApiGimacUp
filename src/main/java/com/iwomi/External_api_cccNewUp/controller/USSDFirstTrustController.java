@@ -244,9 +244,9 @@ public class USSDFirstTrustController {
 
         UserSession user = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
         // would check the default language and know which message to display
+        UserSession user2 = new UserSession();
 
-
-        Map<String, String> checkpinU = ussdFirstTrustService.CheckPin(msisdn1,message);
+        Map<String, String> checkpinU = ussdFirstTrustService.CheckPin(msisdn,message);
 
 
 
@@ -256,7 +256,7 @@ public class USSDFirstTrustController {
         List<Ussdfirstpage> menu = ussdfirstpageRepository.findAllActive();
         List<Ussdfirstpage> sortedmenu = menu.stream().sorted(Comparator.comparing(Ussdfirstpage::getRang)).collect(Collectors.toList());
 
-        if (user != null) {
+        if (user != null ) {
 
             int max1 = user.getMax();
             int iter1 = user.getIterator();
@@ -264,6 +264,8 @@ public class USSDFirstTrustController {
             int iter3 = user.getIteratorPIN();
             String num = user.getTranstel();
             String amt = user.getAmount();
+            String phone = user2.getPhone();
+
 
             //booundaries start
             //french language translation
@@ -361,7 +363,6 @@ public class USSDFirstTrustController {
 
                             map.put("message", text);
                             map.put("command", 1);
-                            UserSession user2 = new UserSession();
                             user2.setMenulevel(message);
                             user2.setUuid(sessionid);
                             user2.setPhone(msisdn);
@@ -993,7 +994,7 @@ public class USSDFirstTrustController {
                         } else {
                             Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
-                                Map<String, String> solde =getwalletInquiry(msisdn1);
+                                Map<String, String> solde =getwalletInquiry(phone);
                                 System.out.println(solde.get("data"));
                                 map.put("message",solde.get("data") + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("3");
@@ -2315,7 +2316,6 @@ public class USSDFirstTrustController {
 
                             map.put("message", text);
                             map.put("command", 1);
-                            UserSession user2 = new UserSession();
                             user2.setMenulevel(message);
                             user2.setUuid(sessionid);
                             user2.setPhone(msisdn);
@@ -3182,7 +3182,6 @@ public class USSDFirstTrustController {
         } else {
             // if(!Objects.isNull(user) && user.getDele().equalsIgnoreCase("0") && ( !Objects.isNull(user.getLang()) && user.getLang().equalsIgnoreCase("fr"))){
             System.out.println("hello2");
-            UserSession user2 = new UserSession();
             user2.setMenulevel("0");
             user2.setUuid(sessionid);
             user2.setPhone(msisdn);
@@ -3450,7 +3449,21 @@ public class USSDFirstTrustController {
 
     public Map<String, String> getwalletInquiry(@RequestBody String tel) {
         Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(tel);
-        return ussdFirstTrustService.getSolde("001",  obj.get("cli").toString(),  obj.get("cpt").toString());
+        System.out.println(obj);
+        return ussdFirstTrustService.getSolde(  obj.get("cli").toString(),  obj.get("cpt").toString());
+    }
+    @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
+    public Map<String, String> getwalletInquiry1(@RequestBody Map<String, String> payload) {
+        Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
+        System.out.println(obj);
+        return ussdFirstTrustService.getSolde( obj.get("cli").toString(),  obj.get("cpt").toString());
+    }
+
+    @RequestMapping(value = "/byphone", method = RequestMethod.POST)
+    public Map<String, Object> getwallet(@RequestBody Map<String, String> payload) {
+        Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
+        System.out.println(obj);
+        return obj;
     }
 
     @RequestMapping(value = "/requestpayment", method = RequestMethod.POST)

@@ -63,13 +63,13 @@ public class UssdFirstTrustService {
 
     }
 
-    public Map<String, String> getSolde(String etab, String cli, String cpt) {
+    public Map<String, String> getSolde( String cli, String cpt) {
         Map<String, String> res = new HashMap<>();
        // res.put("etab", etab);
         res.put("cli", cli);
         res.put("cpt", cpt);
-        String baseUrel = "http://192.168.30.59:8084/";
-        //String baseUrel = "http://localhost:8084/";
+        //String baseUrel = "http://192.168.30.59:8084/";
+        String baseUrel = "http://localhost:8084/";
         Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getSolde")
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -91,8 +91,8 @@ public class UssdFirstTrustService {
     public Map<String, Object> getcptByTel(String telephone) {
         Map<String,String> res = new HashMap<>();
         res.put("telephone", telephone);
-        String baseUrel="http://192.168.30.59:8084/";
-        //String baseUrel = "http://localhost:8084/";
+        //String baseUrel="http://192.168.30.59:8084/";
+        String baseUrel = "http://localhost:8084/";
         Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel + "/digitalbank/getTelephone")
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -167,8 +167,8 @@ public class UssdFirstTrustService {
         Map<String, Object> response = new HashMap<>();
         response.put("tel", tel);
         response.put("Pin", Pin);
-        String baseUrel = "http://192.168.30.59:8084/";
-        //String baseUrel="http://localhost:8084/";
+        //String baseUrel = "http://192.168.30.59:8084/";
+        String baseUrel="http://localhost:8084/";
         Unirest.config().verifySsl(false);
         HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/checkPin")
                 .header("Content-Type", "application/x-www-form-urlencoded")
