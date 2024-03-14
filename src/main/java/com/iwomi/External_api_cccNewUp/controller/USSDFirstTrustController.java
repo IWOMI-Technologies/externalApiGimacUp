@@ -245,8 +245,9 @@ public class USSDFirstTrustController {
         UserSession user = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
         // would check the default language and know which message to display
         UserSession user2 = new UserSession();
-
-        Map<String, String> checkpinU = ussdFirstTrustService.CheckPin(msisdn,message);
+        Map<String,Object> resp = new HashMap<>();
+        resp.put("pin",message);
+        Map<String, Object> checkpi = checkPinU(resp);
 
 
 
@@ -720,7 +721,8 @@ public class USSDFirstTrustController {
                                 map.put("command", 5);
                             } else {
                                 Map<String, Object> verif = pinverifiaction(message, max1, iter3);
-                                if (verif.get("result").toString().equalsIgnoreCase("ok") && checkpinU.get("status").equalsIgnoreCase("01")) {
+                                //)
+                                if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkpi.get("status").toString().equalsIgnoreCase("01")) {
                                     map.put("message", "transaction successfull");
                                     map.put("command", 6);
                                 } else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
@@ -994,9 +996,10 @@ public class USSDFirstTrustController {
                         } else {
                             Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
-                                Map<String, String> solde =getwalletInquiry(phone);
-                                System.out.println(solde.get("data"));
-                                map.put("message",solde.get("data") + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                                Map<String, String> res = new HashMap<>();
+                                res.put("telephone",msisdn);
+                                Map<String,String> solde =getwalletInquiry1(res);
+                                map.put("message",solde.get("name")+"your account balance is :"+solde.get("solde") + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("3");
                                 user.setPreval("2");
                                 user.setMenulevel("2");// keep it to menu message
@@ -3448,17 +3451,20 @@ public class USSDFirstTrustController {
 
 
     public Map<String, String> getwalletInquiry(@RequestBody String tel) {
-        Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(tel);
+       JSONObject obj =ussdFirstTrustService.getcptByTel(tel);
         System.out.println(obj);
-        return ussdFirstTrustService.getSolde(  obj.get("cli").toString(),  obj.get("cpt").toString());
+         obj.get("data");
+        return ussdFirstTrustService.getSolde( obj.get("cli").toString(), obj.get("cpt").toString());
     }
-    @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
+  // @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
     public Map<String, String> getwalletInquiry1(@RequestBody Map<String, String> payload) {
-        Map<String,Object>  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
-        Object ls = obj.get("data");
+        //JSONObject  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
 
+       Map<String,Object>  obj =ussdFirstTrustService.getCpt1(payload) ;
+        Map<String,Object>  obj1 =ussdFirstTrustService.getCli(payload) ;
         System.out.println(obj);
-        return ussdFirstTrustService.getSolde( obj.get("cli").toString(),  obj.get("cpt").toString());
+
+        return ussdFirstTrustService.getSolde(obj1.get("cli").toString(),obj.get("cpt").toString());
     }
 
    /* @RequestMapping(value = "/byphone", method = RequestMethod.POST)
@@ -3474,7 +3480,7 @@ public class USSDFirstTrustController {
     }
 
     @RequestMapping(value = "/getwalletinq2", method = RequestMethod.POST)
-    public Map<String, Object> getwalletinq2(@RequestBody Map<String, String> payload) {
+    public JSONObject getwalletinq2(@RequestBody Map<String, String> payload) {
         return ussdFirstTrustService.getcptByTel(payload.get("telephone"));
     }
 
@@ -3483,9 +3489,17 @@ public class USSDFirstTrustController {
         return ussdFirstTrustService.billdetails("001", "0118004", "18004");
     }
 
-    @RequestMapping(value = "/checkPinU", method = RequestMethod.POST)
-    public Map<String, String> checkPinU(@RequestBody Map<String, Object> payload) {
-        return ussdFirstTrustService.CheckPin("694568752", "1234");
+   // @RequestMapping(value = "/checkPinU", method = RequestMethod.POST)
+    public Map<String, Object> checkPinU(@RequestBody Map<String, Object> payload) {
+        return ussdFirstTrustService.CheckPin(payload.get("tel").toString(),payload.get("pin").toString());
+    }
+    @RequestMapping(value = "/getCli", method = RequestMethod.POST)
+    public Map<String, Object> getcli(@RequestBody Map<String,String> telephone){
+        return  ussdFirstTrustService.getCli(telephone);
+    }
+    @RequestMapping(value = "/getCpt", method = RequestMethod.POST)
+    public Map<String, Object> getcpt(@RequestBody Map<String,String> telephone){
+        return  ussdFirstTrustService.getCpt1(telephone);
     }
 
     public Map<String, Object> checkPayload(Map<String, Object> payload, String key) {
