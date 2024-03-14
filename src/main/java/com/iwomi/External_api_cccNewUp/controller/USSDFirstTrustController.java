@@ -23,6 +23,9 @@ import com.iwomi.External_api_cccNewUp.ussd.utils.UtilsUssd;
 import com.iwomi.External_api_cccNewUp.ussd.utils.UtilsUssdscpg;
 import io.micrometer.core.annotation.Timed;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -245,11 +248,6 @@ public class USSDFirstTrustController {
         UserSession user = usersRepo.findClientByPhoneAndUuid(msisdn, sessionid);
         // would check the default language and know which message to display
         UserSession user2 = new UserSession();
-        Map<String,Object> resp = new HashMap<>();
-        resp.put("pin",message);
-        Map<String, Object> checkpi = checkPinU(resp);
-
-
 
         String text = "";
         String dele = "0";
@@ -721,8 +719,9 @@ public class USSDFirstTrustController {
                                 map.put("command", 5);
                             } else {
                                 Map<String, Object> verif = pinverifiaction(message, max1, iter3);
+                                Map<String, Object> checkipinfinal = checkPinU(msisdn,message);
                                 //)
-                                if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkpi.get("status").toString().equalsIgnoreCase("01")) {
+                                if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkipinfinal.get("success").toString().equalsIgnoreCase("01") ) {
                                     map.put("message", "transaction successfull");
                                     map.put("command", 6);
                                 } else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
@@ -995,7 +994,8 @@ public class USSDFirstTrustController {
                             map.put("command", 1);
                         } else {
                             Map<String, Object> verif = pinverifiaction(message, max1, iter3);
-                            if (verif.get("result").toString().equalsIgnoreCase("ok")) {
+                            Map<String,Object> checkpinfinal= checkPinU(msisdn,message);
+                            if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkpinfinal.get("success").toString().equalsIgnoreCase("01")) {
                                 Map<String, String> res = new HashMap<>();
                                 res.put("telephone",msisdn);
                                 Map<String,String> solde =getwalletInquiry1(res);
@@ -3341,7 +3341,7 @@ public class USSDFirstTrustController {
 
     public Map<String, Object> pinverifiaction(String PIN, int max, int iter) {
         // verification of PIN
-        return testRegularExpression1("\\d{4}$", PIN, max, iter);
+        return testRegularExpression1("\\d{6}$", PIN, max, iter);
     }
 
     //for checking PIN
@@ -3456,7 +3456,7 @@ public class USSDFirstTrustController {
          obj.get("data");
         return ussdFirstTrustService.getSolde( obj.get("cli").toString(), obj.get("cpt").toString());
     }
-  // @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
+   @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
     public Map<String, String> getwalletInquiry1(@RequestBody Map<String, String> payload) {
         //JSONObject  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
 
@@ -3476,9 +3476,23 @@ public class USSDFirstTrustController {
 
     @RequestMapping(value = "/requestpayment", method = RequestMethod.POST)
     public Map<String, String> requestPaiement(@RequestBody Map<String, Object> payload) {
-        return ussdFirstTrustService.addListPaiement("001", "0118004", "18004");
+        return ussdFirstTrustService.addListPaiement(payload);
     }
-
+    public Map<String,Object> addlistfunction(){
+        Map<String, Object> response = new HashMap<>();
+        response.put("etab","001");
+        response.put("type","001");
+        response.put("nat","001");
+        response.put("cli","001");
+        response.put("mtrans","001");
+        response.put("lib","001");
+        response.put("typeco","001");
+        response.put("etab","001");
+        response.put("etab","001");
+        response.put("etab","001");
+        response.put("etab","001");
+        return response;
+    }
     @RequestMapping(value = "/getwalletinq2", method = RequestMethod.POST)
     public JSONObject getwalletinq2(@RequestBody Map<String, String> payload) {
         return ussdFirstTrustService.getcptByTel(payload.get("telephone"));
@@ -3489,9 +3503,14 @@ public class USSDFirstTrustController {
         return ussdFirstTrustService.billdetails("001", "0118004", "18004");
     }
 
-   // @RequestMapping(value = "/checkPinU", method = RequestMethod.POST)
-    public Map<String, Object> checkPinU(@RequestBody Map<String, Object> payload) {
-        return ussdFirstTrustService.CheckPin(payload.get("tel").toString(),payload.get("pin").toString());
+    @RequestMapping(value = "/checkPinU", method = RequestMethod.POST)
+    public Map<String, Object> checkPinU(@RequestBody String tel,String pinuser) {
+        System.out.println("this is the tel: "+tel);
+        System.out.println("this is the tel: "+tel);
+        System.out.println("this is the pinuser: "+pinuser);
+        System.out.println("this is the pinuser: "+pinuser);
+        String pin =hash(pinuser);
+        return ussdFirstTrustService.CheckPin(tel,pin);
     }
     @RequestMapping(value = "/getCli", method = RequestMethod.POST)
     public Map<String, Object> getcli(@RequestBody Map<String,String> telephone){
@@ -3501,6 +3520,12 @@ public class USSDFirstTrustController {
     public Map<String, Object> getcpt(@RequestBody Map<String,String> telephone){
         return  ussdFirstTrustService.getCpt1(telephone);
     }
+
+    public String hash (String pin){
+        System.out.println("this is the pin: "+pin);
+        return ussdFirstTrustService.generateHash(pin);
+    }
+
 
     public Map<String, Object> checkPayload(Map<String, Object> payload, String key) {
         if (!payload.containsKey(key)) {

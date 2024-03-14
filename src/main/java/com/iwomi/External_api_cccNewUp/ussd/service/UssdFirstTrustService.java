@@ -7,6 +7,9 @@ package com.iwomi.External_api_cccNewUp.ussd.service;
 import com.iwomi.External_api_cccNewUp.model.Nomenclature;
 import com.iwomi.External_api_cccNewUp.repository.NomenclatureRepository;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +105,6 @@ public class UssdFirstTrustService {
     }
 
     public JSONObject cptClientSolde(JSONObject t) {
-        JSONArray response1 = new JSONArray();
         JSONObject response = new JSONObject();
         response.put("sold",t.get("current_balance"));
         response.put("name",t.get("inti"));
@@ -235,54 +237,62 @@ public class UssdFirstTrustService {
     }
 
 
-    public Map<String, String> addListPaiement(String etab, String cli, String cpt) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("etab", etab);
-        response.put("cli", cli);
-        response.put("cpt", cpt);
+    public Map<String, String> addListPaiement(Map<String,Object> payload) {
+        Map<String, Object> res = new HashMap<>();
         //String baseUrel = "http://192.168.30.59:8084/";
         String baseUrel="http://localhost:8084/";
-        Unirest.config().verifySsl(false);
-        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/requestPaiement")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body(response)
-                .asString();
-        Map<String, String> resp = new HashMap<>();
-        System.out.println("body :" + res.getBody());
-        if (res.getStatus() == 200) {
-            System.out.println("Token :" + res.getBody());
-            resp.put("status", "01");
-            resp.put("data", res.getBody());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(payload,headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/addPaiementGimac", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+
+        Map<String,String> resp = new HashMap<>();
+        JSONObject jsd =new JSONObject();
+        System.out.println("body :" + response.getBody());
+        response.getStatusCode();
+        if(response.getStatusCodeValue() == 200) {
+            System.out.println("Token :" + response.getBody());
+            resp.put("message", response.getBody());
+            resp.put("success", "01");
+            // ResponseEntity<JSONObject> respon = response.getBody();
         } else {
             resp.put("status", "100");
-            resp.put("data", res.getBody());
+            resp.put("data", response.getBody());
         }
         return resp;
     }
 
-
     public Map<String, String> billdetails(String etab, String cli, String cpt) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("etab", etab);
-        response.put("cli", cli);
-        response.put("cpt", cpt);
+        Map<String, Object> res= new HashMap<>();
+        res.put("etab", etab);
+        res.put("cli", cli);
+        res.put("cpt", cpt);
         // response.put("tel", user.getTranstel);
         //String baseUrel = "http://192.168.30.59:8084/";
         String baseUrel="http://localhost:8084/";
-        Unirest.config().verifySsl(false);
-        HttpResponse<String> res = Unirest.post(baseUrel + "/digitalbank/getBillToPay")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body(response)
-                .asString();
-        Map<String, String> resp = new HashMap<>();
-        System.out.println("body :" + res.getBody());
-        if (res.getStatus() == 200) {
-            System.out.println("Token :" + res.getBody());
+        System.out.println("this is the phone number : "+ res);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(res,headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getCli1", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+
+        Map<String,String> resp = new HashMap<>();
+        JSONObject jsd =new JSONObject();
+        System.out.println("body :" + response.getBody());
+        response.getStatusCode();
+        if(response.getStatusCodeValue() == 200) {
+            System.out.println("Token :" + response.getBody());
             resp.put("status", "01");
-            resp.put("data", res.getBody());
+            resp.put("cli", response.getBody());
+            // ResponseEntity<JSONObject> respon = response.getBody();
         } else {
             resp.put("status", "100");
-            resp.put("data", res.getBody());
+            resp.put("data", response.getBody());
         }
         return resp;
     }
@@ -315,6 +325,30 @@ public class UssdFirstTrustService {
             resp.put("data", response.getBody());
         }
         return resp;
+    }
+    public String generateHash(String toHash) {
+        System.out.println("this is the hash msg: "+toHash);
+        System.out.println("this is the hash msg: "+toHash);
+        System.out.println("this is the hash msg: "+toHash);
+        // = "someRandomString";
+        MessageDigest md = null;
+        byte[] hash = null;
+        try {
+            md = MessageDigest.getInstance("SHA-512");
+            hash = md.digest(toHash.getBytes("UTF-8"));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return convertToHex(hash);
+    }
+    private String convertToHex(byte[] raw) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < raw.length; i++) {
+            sb.append(Integer.toString((raw[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
     }
 }
 
