@@ -255,6 +255,7 @@ public class USSDFirstTrustController {
         List<Ussdfirstpage> menu = ussdfirstpageRepository.findAllActive();
         List<Ussdfirstpage> sortedmenu = menu.stream().sorted(Comparator.comparing(Ussdfirstpage::getRang)).collect(Collectors.toList());
 
+
         if (user != null ) {
 
             int max1 = user.getMax();
@@ -263,7 +264,11 @@ public class USSDFirstTrustController {
             int iter3 = user.getIteratorPIN();
             String num = user.getTranstel();
             String amt = user.getAmount();
-            String phone = user2.getPhone();
+            String nat = user.getNat();
+            String member = user.getMember();
+            String region = user.getRegion();
+            String billnum = user.getBillnum();
+            String billref = user.getBillref();
 
 
             //booundaries start
@@ -278,6 +283,10 @@ public class USSDFirstTrustController {
                 }
                 String ml = user.getMenulevel();
 
+                /***
+                 * this function will process the payment this is for transfer!!!
+                 */
+
                 if (ml.equalsIgnoreCase("1")) {
                     // System.out.println("this step is ok ml level");
                     if (pos.equalsIgnoreCase("1")) {
@@ -286,6 +295,7 @@ public class USSDFirstTrustController {
                         map.put("message", "entrer le pay ou la zone ou vous voulez transactioner" + "\n" + "1. firsttrust a firsttrust" + "\n" + "2. Autre cameroon" + "\n" + "3. Autre CEMAC" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                         user.setPos("2");
                         user.setPreval("1");
+                        user.setTop("VIRE");
                         user.setMenulevel("1");// keep it to menu message
                         usersRepo.save(user);
                         System.out.println("this is the message value:" + message);
@@ -298,6 +308,9 @@ public class USSDFirstTrustController {
                             map.put("message", "veuillez entrer le numéro de téléphone ou le numero de portefeuille" + "\n" + "7777. precedent" + "\n" + "9999 . menu principal" + "\n" + "0. quitter" + "\n");
                             user.setPos("3");
                             user.setPreval("2");
+                            user.setNat("TRIN");
+                            user.setMember("");
+                            user.setRegion("local");
                             user.setSublevel("1");
                             user.setMenulevel("1");// keep it to menu message
                             usersRepo.save(user);
@@ -307,6 +320,8 @@ public class USSDFirstTrustController {
                             System.out.println("this step is ok pos level2 s2" + pos);
                             map.put("message", "choisissez  la banque ou vous voulez faire le transfert" + "\n" + "1. Bipay" + "\n" + "2. speedoh" + "\n" + "3. orange money" + "\n" + "4. mobile money" + "5. afriland" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . menu principal" + "\n" + "0. quitter" + "\n");
                             user.setPos("3");
+                            user.setNat("TRIN");
+                            user.setRegion("local");
                             user.setSublevel("2");
                             user.setPreval("2");
                             user.setMenulevel("1");// keep it to menu message
@@ -318,6 +333,7 @@ public class USSDFirstTrustController {
                             map.put("message", "choose the country for the transaction" + "\n" + "1. Gabon" + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo" + "\n" + "6. cca" + "\n" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                             user.setPos("3");
                             user.setPreval("2");
+                            user.setNat("TRIB");
                             user.setSublevel("3");
                             user.setMenulevel("1");// keep it to menu message
                             usersRepo.save(user);
@@ -430,6 +446,7 @@ public class USSDFirstTrustController {
                                 map.put("message", "sending to bipay account enter the number " + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("4");
                                 user.setPreval("3");
+                                user.setMember("");
                                 user.setSublevel(message);
                                 user.setMenulevel("1");// keep it to menu message
                                 usersRepo.save(user);
@@ -439,6 +456,7 @@ public class USSDFirstTrustController {
                                 map.put("message", "sending to speedoh account enter the number " + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("4");
                                 user.setPreval("3");
+                                user.setMember("12001");
                                 user.setSublevel(message);
                                 user.setMenulevel("1");// keep it to menu message
                                 usersRepo.save(user);
@@ -448,6 +466,7 @@ public class USSDFirstTrustController {
                                 user.setPos("4");
                                 user.setPreval("3");
                                 user.setSublevel(message);
+                                user.setMember("12001");
                                 user.setMenulevel("1");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command", 4);
@@ -457,6 +476,7 @@ public class USSDFirstTrustController {
                                 user.setPos("4");
                                 user.setPreval("3");
                                 user.setSublevel(message);
+                                user.setMember("12001");
                                 user.setMenulevel("1");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command", 4);
@@ -720,8 +740,19 @@ public class USSDFirstTrustController {
                             } else {
                                 Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                                 Map<String, Object> checkipinfinal = checkPinU(msisdn,message);
-                                //)
-                                if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkipinfinal.get("success").toString().equalsIgnoreCase("01") ) {
+                                Map<String,String> resp= new HashMap<>();
+                                resp.put("tel",msisdn);
+                                resp.put("pin",hash(message));
+                                resp.put("member",member);
+                                resp.put("codewalop",num);
+                                resp.put("amount",amt);
+                                resp.put("nat",nat);
+                                resp.put("region",region);
+                                System.out.println("ace made the payment" + msisdn);
+                                System.out.println("ace made the payment" + amt);
+                                Map<String,String> processpaymt= requestPaiement(resp);
+                                System.out.println("ace made the payment"+ resp);
+                                if (verif.get("result").toString().equalsIgnoreCase("ok")&& processpaymt.get("success").toString().equalsIgnoreCase("01")) {
                                     map.put("message", "transaction successfull");
                                     map.put("command", 6);
                                 } else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
@@ -954,6 +985,11 @@ public class USSDFirstTrustController {
 
                         }
                     }
+
+                    /**
+                     * this is for checking balance
+                     */
+
                 } else if (ml.equalsIgnoreCase("2")) {
 
                     if (pos.equalsIgnoreCase("1")) {
@@ -998,7 +1034,7 @@ public class USSDFirstTrustController {
                             if (verif.get("result").toString().equalsIgnoreCase("ok")&& checkpinfinal.get("success").toString().equalsIgnoreCase("01")) {
                                 Map<String, String> res = new HashMap<>();
                                 res.put("telephone",msisdn);
-                                Map<String,String> solde =getwalletInquiry1(res);
+                                Map<String,String> solde =getsolde(res);
                                 map.put("message",solde.get("name")+"your account balance is :"+solde.get("solde") + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("3");
                                 user.setPreval("2");
@@ -1021,9 +1057,11 @@ public class USSDFirstTrustController {
                                 }
                             }
                         }
-
-
                     }
+
+                    /**
+                     * this is for bill payment
+                     */
 
                 } else if (ml.equalsIgnoreCase("3")) {
                     if (pos.equalsIgnoreCase("1")) {
@@ -1042,12 +1080,14 @@ public class USSDFirstTrustController {
                             user.setPos("3");
                             user.setPreval("2");
                             user.setMenulevel("3");
+                            user.setTop("PAVA");
                             user.setSublevel("1");
                             usersRepo.save(user);
                             System.out.println("this is the message value:" + message);
                             map.put("command", 3);
+
                         } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("2")) {
-                            map.put("message", "Choose the Country for the transaction" + "\n" + "1. Gabon " + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            map.put("message", "Choose the Country for the transaction" + "\n" + "1. Gabon " + "\n" + "2. Tchad" + "\n" + "3. RCA" + "\n" + "4. Congo " + "\n"  + "5. Equatorial guinea" + "\n "+"7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                             user.setPos("3");
                             user.setPreval("2");
                             user.setMenulevel("3");
@@ -1055,6 +1095,7 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             System.out.println("this is the message value:" + message);
                             map.put("command", 3);
+
                         } else if (pos.equalsIgnoreCase("2") && message.equalsIgnoreCase("9999")) {
                             String menu_elements = this.getValueByKey("menu_head", labels)[1];
                             for (Ussdfirstpage elements : sortedmenu) {
@@ -1083,33 +1124,59 @@ public class USSDFirstTrustController {
                             usersRepo.save(user);
                             map.put("command", 2);
                         }
+
+                        /**
+                         * this is for bill payment CMR
+                         */
+
                     } else if (pos.equalsIgnoreCase("3")) {
                         if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("1")) {
+
                             if (message.equalsIgnoreCase("1")) {
                                 map.put("message", "please enter your eneo bill number" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("4");
                                 user.setPreval("3");
                                 user.setMenulevel("3");
                                 user.setSublevel("1");
+                                user.setNat("LOPE");
+                                user.setMember("13001");
                                 usersRepo.save(user);
                                 map.put("command", 3);
+
                             } else if (message.equalsIgnoreCase("2")) {
                                 map.put("message", "please enter your camwater bill number" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("4");
                                 user.setPreval("3");
                                 user.setMenulevel("3");
                                 user.setSublevel("1");
+                                user.setNat("LOPC");
+                                user.setMember("13003");
                                 usersRepo.save(user);
                                 map.put("command", 3);
+
                             } else if (message.equalsIgnoreCase("3")) {
                                 map.put("message", "please enter your Guce bill number" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("4");
                                 user.setPreval("3");
                                 user.setMenulevel("3");
                                 user.setSublevel("1");
+                                user.setNat("");
+                                user.setMember("");
                                 usersRepo.save(user);
                                 map.put("command", 3);
-                            } else if (message.equalsIgnoreCase("9999")) {
+
+                            }else if (message.equalsIgnoreCase("4")) {
+                                map.put("message", "please enter your CANAL+ bill number" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                                user.setPos("4");
+                                user.setPreval("3");
+                                user.setMenulevel("3");
+                                user.setSublevel("1");
+                                user.setNat("LOPA");
+                                user.setMember("13002");
+                                usersRepo.save(user);
+                                map.put("command", 3);
+
+                            }  else if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("menu_head", labels)[1];
                                 for (Ussdfirstpage elements : sortedmenu) {
                                     int va = elements.getRang();
@@ -1130,6 +1197,11 @@ public class USSDFirstTrustController {
                                 usersRepo.save(user);
                                 map.put("command", 3);
                             }
+
+                            /**
+                             * this is for bill payment CEMAC CHOOSE THE COUNTRY
+                             */
+
                         } else if (pos.equalsIgnoreCase("3") && user.getSublevel().equalsIgnoreCase("2")) {
                             if (message.equalsIgnoreCase("1")) {
                                 map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
@@ -1184,7 +1256,6 @@ public class USSDFirstTrustController {
 
                     } else if (pos.equalsIgnoreCase("4")) {
                         if (pos.equalsIgnoreCase("4") && user.getSublevel().equalsIgnoreCase("1")) {
-
                             if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("menu_head", labels)[1];
                                 for (Ussdfirstpage elements : sortedmenu) {
@@ -1198,14 +1269,16 @@ public class USSDFirstTrustController {
                                 user.setMenulevel("3");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command", 2);
+
                             } else if (message.equalsIgnoreCase("7777")) {
                                 map.put("message", "which bill  do you want to pay " + "\n" + "1. Eneo" + "\n" + "2. Camwater" + "\n" + "3. Guce" + "\n" + "4. Canal +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("3");
                                 user.setMenulevel("3");// keep it to menu message
                                 usersRepo.save(user);
                                 map.put("command", 4);
+
                             } else {
-                                map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X enter your pin for validation" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                                map.put("message","enter the references" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPreval("4");
                                 user.setPos("5");
                                 user.setBillnum(message);
@@ -1264,7 +1337,45 @@ public class USSDFirstTrustController {
                                 map.put("command", 4);
                             }
                         }
+
                     } else if (pos.equalsIgnoreCase("5")) {
+                        if (message.equalsIgnoreCase("9999")) {
+                            String menu_elements = this.getValueByKey("menu_head", labels)[1];
+                            for (Ussdfirstpage elements : sortedmenu) {
+                                int va = elements.getRang();
+                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                            }
+                            text = menu_elements;
+
+                            map.put("message", text);
+                            user.setPos("1");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 2);
+                        } else if (message.equalsIgnoreCase("7777")) {
+                            map.put("message", "which bill  do you want to pay " + "\n" + "1. Eneo" + "\n" + "2. Camwater" + "\n" + "3. Guce" + "\n" + "4. Canal +" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPos("3");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 5);
+                        } else {
+                            Map<String,Object> ref = new HashMap<>();
+                            ref.put("member", member);
+                            ref.put("codewaldo", msisdn);
+                            ref.put("billref", billref);
+                            Map<String,Object> billinfo= billinquiry(ref);
+                            map.put("message", billinfo + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
+                            user.setPreval("4");
+                            user.setBillref(message);
+                            user.setPos("5");
+                            user.setMenulevel("3");// keep it to menu message
+                            usersRepo.save(user);
+                            map.put("command", 6);
+                        }
+
+
+                    } else if (pos.equalsIgnoreCase("6")) {
+
                         if (user.getSublevel().equalsIgnoreCase("1")) {
                             if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("menu_head", labels)[1];
@@ -1285,7 +1396,7 @@ public class USSDFirstTrustController {
                                 user.setPos("4");
                                 user.setMenulevel("3");// keep it to menu message
                                 usersRepo.save(user);
-                                map.put("command", 5);
+                                map.put("command", 6);
 
                             } else {
                                 Map<String, Object> verif = pinverifiaction(message, max1, iter3);
@@ -1296,7 +1407,7 @@ public class USSDFirstTrustController {
                                     user.setMenulevel("3");
                                     user.setSublevel("1");
                                     usersRepo.save(user);
-                                    map.put("command", 6);
+                                    map.put("command", 7);
                                 } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                     if (max1 == iter3) {
                                         map.put("message", verif.get("result").toString());
@@ -1335,21 +1446,26 @@ public class USSDFirstTrustController {
                                 user.setPos("4");
                                 user.setMenulevel("3");// keep it to menu message
                                 usersRepo.save(user);
-                                map.put("command", 5);
+                                map.put("command", 6);
                             } else {
-                                map.put("message", "bill number xxxxxxxx has an amount of xxxxxxx and penalities of Xxxxxx bill holder X" + "\n" + "do you want to pay" + "\n" + "1. yes" + "\n" + "2. no and exit" + "\n");
+                                Map<String,Object> ref = new HashMap<>();
+                                ref.put("member", member);
+                                ref.put("codewaldo", msisdn);
+                                ref.put("billref", billref);
+                                Map<String,Object> billinfo= billinquiry(ref);
+                                map.put("message", billinfo + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
                                 user.setPos("6");
                                 user.setPreval("5");
-                                user.setBillnum(message);
+                                user.setBillref(message);
                                 user.setMenulevel("3");
                                 user.setSublevel("2");
                                 usersRepo.save(user);
-                                map.put("command", 6);
+                                map.put("command", 7);
                             }
 
                         }
 
-                    } else if (pos.equalsIgnoreCase("6")) {
+                    } else if (pos.equalsIgnoreCase("7")) {
                         if (user.getSublevel().equalsIgnoreCase("2")) {
                             if (message.equalsIgnoreCase("7777")) {
                                 map.put("message", "choose which bill you want to pay" + "\n" + "1. Sagessa" + "\n" + "2. AirtelGobon" + "\n" + "3. Moov" + "\n" + "7777. precedent" + "\n" + "9999 . HOME" + "\n" + "0. Exit" + "\n");
@@ -3457,9 +3573,7 @@ public class USSDFirstTrustController {
         return ussdFirstTrustService.getSolde( obj.get("cli").toString(), obj.get("cpt").toString());
     }
    @RequestMapping(value = "/getwalletInquiry", method = RequestMethod.POST)
-    public Map<String, String> getwalletInquiry1(@RequestBody Map<String, String> payload) {
-        //JSONObject  obj =ussdFirstTrustService.getcptByTel(payload.get("telephone")) ;
-
+    public Map<String, String> getsolde(@RequestBody Map<String, String> payload) {
        Map<String,Object>  obj =ussdFirstTrustService.getCpt1(payload) ;
         Map<String,Object>  obj1 =ussdFirstTrustService.getCli(payload) ;
         System.out.println(obj);
@@ -3475,42 +3589,36 @@ public class USSDFirstTrustController {
     }*/
 
     @RequestMapping(value = "/requestpayment", method = RequestMethod.POST)
-    public Map<String, String> requestPaiement(@RequestBody Map<String, Object> payload) {
-        return ussdFirstTrustService.addListPaiement(payload);
-    }
-    public Map<String,Object> addlistfunction(){
-        Map<String, Object> response = new HashMap<>();
-        response.put("etab","001");
-        response.put("type","001");
-        response.put("nat","001");
-        response.put("cli","001");
-        response.put("mtrans","001");
-        response.put("lib","001");
-        response.put("typeco","001");
-        response.put("etab","001");
-        response.put("etab","001");
-        response.put("etab","001");
-        response.put("etab","001");
-        return response;
+    public Map<String, String> requestPaiement(@RequestBody Map<String,String> payload) {
+        Map<String, Object> obj = addlistfunction(payload);
+        System.out.println(obj);
+        return ussdFirstTrustService.addListPaiement(obj);
     }
     @RequestMapping(value = "/getwalletinq2", method = RequestMethod.POST)
     public JSONObject getwalletinq2(@RequestBody Map<String, String> payload) {
         return ussdFirstTrustService.getcptByTel(payload.get("telephone"));
     }
-
     @RequestMapping(value = "/billInquiry", method = RequestMethod.POST)
-    public Map<String, String> billinquiry(@RequestBody Map<String, Object> payload) {
-        return ussdFirstTrustService.billdetails("001", "0118004", "18004");
+    public Map<String, Object> billinquiry(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> Obj = billfunc(payload);
+        System.out.println("fabrication object payment" + Obj);
+        return ussdFirstTrustService.billdetails(Obj);
     }
-
+    @RequestMapping(value = "/billpayment", method = RequestMethod.POST)
+    public Map<String, Object> paybill(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> Obj = billinquiry(payload);
+        return ussdFirstTrustService.billpayment(Obj);
+    }
     @RequestMapping(value = "/checkPinU", method = RequestMethod.POST)
     public Map<String, Object> checkPinU(@RequestBody String tel,String pinuser) {
-        System.out.println("this is the tel: "+tel);
-        System.out.println("this is the tel: "+tel);
-        System.out.println("this is the pinuser: "+pinuser);
-        System.out.println("this is the pinuser: "+pinuser);
         String pin =hash(pinuser);
         return ussdFirstTrustService.CheckPin(tel,pin);
+    }
+    @RequestMapping(value = "/getNomencTabcdAcscd", method = RequestMethod.POST)
+    public Map<String, Object> getNomencTabcdAcscd(@RequestBody Map<String, String> payload) throws Exception {
+        System.out.println("yvo recuperation en local: getNomencTabcd");
+        System.out.println(payload);
+        return ussdFirstTrustService.getNomencTabcdAcscd(payload.get("tabcd"),payload.get("acscd"),payload.get("etab"));
     }
     @RequestMapping(value = "/getCli", method = RequestMethod.POST)
     public Map<String, Object> getcli(@RequestBody Map<String,String> telephone){
@@ -3519,6 +3627,49 @@ public class USSDFirstTrustController {
     @RequestMapping(value = "/getCpt", method = RequestMethod.POST)
     public Map<String, Object> getcpt(@RequestBody Map<String,String> telephone){
         return  ussdFirstTrustService.getCpt1(telephone);
+    }
+ /*   @RequestMapping(value = "/getNomenDataByTabcd", method = RequestMethod.POST)
+    public JSONObject getnomE (Map<String, String> payload) {
+        return ussdFirstTrustService.makeOperation(payload);
+    }*/
+    public Map<String, Object> addlistfunction(Map<String, String> payload) {
+        System.out.println("fabrication object payment" + payload);
+        Map<String, Object> obj1 =ussdFirstTrustService.getCli(payload);
+        Map<String, Object> response = new HashMap<>();
+        response.put("etab", "001");
+        response.put("type", "firstrust");
+        response.put("region", payload.get("region"));
+        response.put("nat", payload.get("nat"));
+        response.put("cli", obj1.get("cli"));
+        response.put("mtrans", payload.get("amount"));
+        response.put("lib", "transfert wallet to wallet");
+        response.put("typeco", "VIRE");
+        response.put("network", "");
+        response.put("top", "VIRE");
+        response.put("tel", payload.get("tel"));
+        response.put("telop", "");
+        response.put("pin", payload.get("pin"));
+        response.put("codewaldo", "001");
+        response.put("codewalop", payload.get("codewalop"));
+        response.put("partnerid", "");
+        response.put("partnerlib", "");
+        response.put("member",payload.get("member"));
+        response.put("transtype", "RE");
+        response.put("recievercustmerdata", "");
+        response.put("vouchercode", "");
+        return response;
+    }
+    public Map<String, Object> billfunc (Map<String, Object> payload){
+        Map<String,Object>response = new HashMap<>();
+        response.put("intent", "bill_inquiry");
+        response.put("member",payload.get("member"));
+        response.put("codewaldo", payload.get("codewaldo"));
+        response.put("serviceRef", "SRV_001");
+        response.put("queryRef", "CTR_REF");
+        response.put("contractRef", payload.get("billref"));
+        System.out.println("fabrication de facturier" + payload.get("billref"));
+       // response.put("contractRef", "1248899R78FDF");
+        return response;
     }
 
     public String hash (String pin){

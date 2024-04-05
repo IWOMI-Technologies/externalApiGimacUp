@@ -9,15 +9,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
  * @author user
  */
 @Data
@@ -26,9 +27,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "ussdsession")
-public class UserSession implements Serializable{
+public class UserSession implements Serializable {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int id;
     public String phone;//phone without 237
     public String uuid;//unique identifier or subscription code of the user
@@ -45,35 +46,38 @@ public class UserSession implements Serializable{
     public String lib2;
     public Date crtd;
     public Date mdfi;
+    public String nat;
+    public String member;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
     public String acc;//json array
-    
+
     public String dele;
     public int max; // max trial test case
     public int iterator; // iterator for counts
     public int iteratorPIN;
     public int iteratorAMT;
     public String menulevel;
-     public String provider;
-     public String transtel;
-   public  String Amount;
-   public String billnum;
+    public String provider;
+    public String transtel;
+    public String top;
+    public String region;
+    public String Amount;
+    public String billnum;
+    public String billref;
 
-    public  String sublevel;
-    public  String sublevel2;
-    public  String pin;
-     public String  duration;
-   public  String language;
+    public String sublevel;
+    public String sublevel2;
+    public String pin;
+    public String duration;
+    public String language;
+
     @Override
     public String toString() {
         return "UserSession{" + "id=" + id + ", phone=" + phone + ", uuid=" + uuid + ", pos=" + pos + ", preval=" + preval + ", iscon=" + iscon + ", lang=" + lang + ", lib2=" + lib2 + ", crtd=" + crtd + ", mdfi=" + mdfi + ", dele=" + dele + '}';
     }
 
-    
-    
-    
-    
+
 }
 

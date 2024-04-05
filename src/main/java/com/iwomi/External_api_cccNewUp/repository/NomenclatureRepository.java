@@ -20,6 +20,8 @@ public interface NomenclatureRepository extends JpaRepository<Nomenclature, Long
     
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3",nativeQuery=true)
     public  Nomenclature  findUrl1(String tabcd,String acscd, String dele);
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3 and e.cetab=?4",nativeQuery=true)
+    public  Nomenclature  findUrl2(String tabcd,String acscd, String dele,String etab);
         
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd ='5011' and dele=0",nativeQuery=true)
     public  Nomenclature findInNomenclatureEmail();
