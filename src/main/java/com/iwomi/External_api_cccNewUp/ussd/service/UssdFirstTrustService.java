@@ -79,8 +79,8 @@ public class UssdFirstTrustService {
         // res.put("etab", etab);
         res.put("cli", cli);
         res.put("cpt", cpt);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map> entity = new HttpEntity<Map>(res, headers);
@@ -116,8 +116,8 @@ public class UssdFirstTrustService {
     public Map<String, String> nomendata(Map<String, String> payload) {
         Map<String, String> res = new HashMap<>();
         // res.put("etab", etab);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map> entity = new HttpEntity<Map>(payload , headers);
@@ -143,20 +143,18 @@ public class UssdFirstTrustService {
         return resp;
     }
 
-    public Map<String, String> getSolde2(String cli, String cpt) {
+    public Map<String, Object> walletinq(Map<String, Object> payload) {
+        System.out.println("fabrication objet" + payload);
         Map<String, String> res = new HashMap<>();
-        // res.put("etab", etab);
-        res.put("cli", cli);
-        res.put("cpt", cpt);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(res, headers);
+        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getSolde", entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getwalletInquiry", entity, String.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
-        Map<String, String> resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
         JSONObject jsd = new JSONObject();
         System.out.println("body :" + response.getBody());
         response.getStatusCode();
@@ -175,8 +173,8 @@ public class UssdFirstTrustService {
     public JSONObject getcptByTel(String telephone) {
         Map<String, String> res = new HashMap<>();
         res.put("telephone", telephone);
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel="http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
        /* Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
                 .header("Content-Type", "application/json")
@@ -206,8 +204,8 @@ public class UssdFirstTrustService {
     }
 
     public Map<String, Object> getCpt1(Map<String, String> res) {
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel="http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
        /* Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
                 .header("Content-Type", "application/json")
@@ -237,8 +235,8 @@ public class UssdFirstTrustService {
     }
 
     public Map<String, Object> getCli(Map<String, String> res) {
-        //String baseUrel="http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel="http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
        /* Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
                 .header("Content-Type", "application/json")
@@ -270,8 +268,8 @@ public class UssdFirstTrustService {
 
     public Map<String, String> addListPaiement(Map<String, Object> payload) {
         Map<String, Object> res = new HashMap<>();
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
@@ -298,8 +296,8 @@ public class UssdFirstTrustService {
 
     public Map<String, Object> billdetails(Map<String, Object> payload) {
         Map<String, Object> res = new HashMap<>();
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         System.out.println("this is the phone number : " + res);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -327,8 +325,8 @@ public class UssdFirstTrustService {
     public Map<String, Object> billpayment(Map<String, Object> payload) {
         Map<String, Object> res = new HashMap<>();
         // response.put("tel", user.getTranstel);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.58:8087/";
+        //String baseUrel = "http://localhost:8087/";
         System.out.println("this is the phone number : " + res);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -357,8 +355,8 @@ public class UssdFirstTrustService {
         Map<String, Object> res = new HashMap<>();
         res.put("tel", tel);
         res.put("pin", pin);
-        //String baseUrel = "http://192.168.30.59:8084/";
-        String baseUrel = "http://localhost:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map> entity = new HttpEntity<Map>(res, headers);
@@ -419,6 +417,71 @@ public class UssdFirstTrustService {
             response.put("nat", t.get("data"));
             return response;
         }
+
+    public Map<String,Object>airtimereload(Map<String,Object>payload){
+        Map<String, Object> res = new HashMap<>();
+        // response.put("tel", user.getTranstel);
+        String baseUrel = "http://192.168.30.58:8087/";
+        //String baseUrel = "http://localhost:8087/";
+        System.out.println("this is the phone number : " + res);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/v1/gimacSend", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+
+        Map<String, Object> resp = new HashMap<>();
+        JSONObject jsd = new JSONObject();
+        System.out.println("body :" + response.getBody());
+        response.getStatusCode();
+        if (response.getStatusCodeValue() == 200) {
+            System.out.println("Token :" + response.getBody());
+            resp.put("status", "01");
+            resp.put("cli", response.getBody());
+            // ResponseEntity<JSONObject> respon = response.getBody();
+        } else {
+            resp.put("status", "100");
+            resp.put("data", response.getBody());
+        }
+        return resp;
+    }
+    public Map<String, String> walletinquiryftsl (String cli, String cpt) {
+        Map<String, String> res = new HashMap<>();
+        // res.put("etab", etab);
+        res.put("cli", cli);
+        res.put("cpt", cpt);
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(res, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getSolde", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+        Map<String, String> resp = new HashMap<>();
+        JSONObject res2F = new JSONObject(response.getBody());
+        JSONObject valueSolde = cptClientSolde2(res2F);
+        System.out.println("body :" + response.getBody());
+        //System.out.println("body 2:" + valueSolde.get("sold").toString());
+        System.out.println("body 3:" + valueSolde.get("name").toString());
+        response.getStatusCode();
+        if (response.getStatusCodeValue() == 200) {
+            System.out.println("Token :" + response.getBody());
+            resp.put("status", "01");
+            resp.put("name", valueSolde.get("name").toString());
+        } else {
+            resp.put("status", "100");
+            resp.put("data", response.getBody());
+        }
+        return resp;
+    }
+
+    public JSONObject cptClientSolde2(JSONObject t) {
+        JSONObject response = new JSONObject();
+        response.put("name", t.get("inti"));
+        return response;
+    }
 
     /*public JSONObject nomitems (JSONObject T){
         String data = T.get("data").toString();
