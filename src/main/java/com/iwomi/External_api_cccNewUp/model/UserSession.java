@@ -40,6 +40,8 @@ public class UserSession implements Serializable {
     public String preval;//previous value selected or entered
     public Boolean iscon;//if connected or not
     public String lang = "en";
+    public String oldpin;
+    public String newpin;
     public int nwpin = 3;//number of times pin entered wrongly
     public int nwotp = 3;//number of times otp entered wrongly
     public int inval = 2;//number of times an incorrect value is entered
@@ -61,6 +63,8 @@ public class UserSession implements Serializable {
     public String menulevel;
     public String provider;
     public String transtel;
+    public String transacc;
+    public String motif;
     public String top;
     public String region;
     public String Amount;

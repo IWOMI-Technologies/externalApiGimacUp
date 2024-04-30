@@ -1816,7 +1816,6 @@ public class USSDFirstTrustController {
                         user.setPos("2");
                         user.setPreval("1");
                         user.setMenulevel("6");
-                        //user.setSublevel("2");
                         usersRepo.save(user);
                         map.put("command", 2);
                     } else if (pos.equalsIgnoreCase("2")) {
@@ -1837,6 +1836,7 @@ public class USSDFirstTrustController {
                             user.setSublevel("2");
                             usersRepo.save(user);
                             map.put("command", 1);
+
                         } else if (message.equalsIgnoreCase("3")) {
                             map.put("message", "enter your old pin");
                             user.setPos("3");
@@ -2030,7 +2030,6 @@ public class USSDFirstTrustController {
                                     menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
                                 }
                                 text = menu_elements;
-
                                 map.put("message", text);
                                 user.setPos("1");
                                 user.setMenulevel("4");// keep it to menu message

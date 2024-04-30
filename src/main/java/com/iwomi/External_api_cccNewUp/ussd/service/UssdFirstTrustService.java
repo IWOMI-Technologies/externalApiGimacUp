@@ -520,6 +520,30 @@ public class UssdFirstTrustService {
         return newData;
     }*/
 
+    public Map<String,Object> editpin(Map<String,Object> payload){
+
+        String baseUrel = "http://192.168.30.59:8084/";
+        //String baseUrel = "http://localhost:8084/";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/changePinU", entity, String.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+        Map<String, Object> resp = new HashMap<>();
+        if (response.getStatusCodeValue() == 200) {
+            System.out.println("Token :" + response.getBody());
+            resp.put("status", "01");
+            resp.put("message", "oldpin incorrect");
+            resp.put("data", response.getBody());
+        } else {
+            resp.put("status", "100");
+            resp.put("message", "oldpin incorrect");
+            resp.put("data", null);
+        }
+        return resp;
+    }
+
     public String generateHash(String toHash) {
         System.out.println("this is the hash msg: " + toHash);
         System.out.println("this is the hash msg: " + toHash);
