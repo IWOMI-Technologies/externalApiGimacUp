@@ -13,8 +13,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Back_home")
-public class Back_home implements Serializable {
+@Table(name = "country")
+public class Country implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,15 +43,15 @@ public class Back_home implements Serializable {
     }
     @Override
     public boolean equals(final Object object) {
-        if (!(object instanceof Back_home)) {
+        if (!(object instanceof Country)) {
             return false;
         }
-        final Back_home other = (Back_home)object;
+        final Country other = (Country)object;
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "entities.back_home[ ids=" + this.id + " ]";
+        return "entities.Country[ ids=" + this.id + " ]";
     }
 }

@@ -51,6 +51,12 @@ public class testussd {
     languageRepo languageRepo;
     @Autowired
     Back_homeRepo backHomeRepo;
+    @Autowired
+    CountryRepo countryRepo;
+    @Autowired
+    PartnerCmBkRepo partnerCmBkRepo;
+    @Autowired
+    PartnerCmWRepo partnerCmWRepo;
 
     @RequestMapping(value = "/endpointgimac", method = RequestMethod.POST)
     ResponseEntity<String> enpointgimac(@RequestBody Map<String, Object> payload) {
@@ -1106,7 +1112,24 @@ public class testussd {
                     /***
                      * THIS IS THE GIMAC MENU LEVEL
                      */
+
+                    List<PartnerCmBk> prt = partnerCmBkRepo.findActive()
+                            .stream()
+                            .sorted(Comparator.comparing(PartnerCmBk::getRang))
+                            .collect(Collectors.toList());
+
+                    List<PartnerCmW> wal = partnerCmWRepo.findActive()
+                            .stream()
+                            .sorted(Comparator.comparing(PartnerCmW::getRang))
+                            .collect(Collectors.toList());
+
+
                 } else if (ml.equalsIgnoreCase("2")) {
+                    List<Country> ctymn = countryRepo.findActive()
+                            .stream()
+                            .sorted(Comparator.comparing(Country::getRang))
+                            .collect(Collectors.toList());
+
                     if (pos.equalsIgnoreCase("1")) {
                         String menuElements = getValueByKey("gimachomepage", labels)[1];
                         for (gimacpage element : sortedMenu) {
@@ -1114,7 +1137,108 @@ public class testussd {
                         }
                         text = menuElements;
                         map.put("message", text);
+                        user.setPos("2");
+                        user.setMenulevel("2");
+                        usersRepo.save(user);
                         map.put("command", 1);
+
+                    } else if (pos.equalsIgnoreCase("2")) {
+                        if (message.equalsIgnoreCase("1")){
+                            String menuElements = getValueByKey("choose_country", labels)[1];
+                            for (Country element : ctymn) {
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
+                            }
+                            text = menuElements;
+                            map.put("message", text);
+                            user.setNat("TRIN");
+                            user.setPos("3");
+                            user.setPreval("1");
+                            user.setSublevel("1");
+                            user.setMenulevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+
+                        } else if (message.equalsIgnoreCase("2")) {
+                            String menuElements = getValueByKey("choose_country", labels)[1];
+                            for (Country element : ctymn) {
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
+                            }
+                            text = menuElements;
+                            map.put("message", text);
+                            user.setPos("3");
+                            user.setPreval("2");
+                            user.setSublevel("2");
+                            user.setMenulevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+
+                        } else if (message.equalsIgnoreCase("3")) {
+                            String menuElements = getValueByKey("choose_country", labels)[1];
+                            for (Country element : ctymn) {
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
+                            }
+                            text = menuElements;
+                            map.put("message", text);
+                            user.setPos("3");
+                            user.setPreval("3");
+                            user.setSublevel("3");
+                            user.setMenulevel("2");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+
+                        }
+
+                    } else if (pos.equalsIgnoreCase("3")) {
+                        String sl = user.getSublevel();
+                        if (sl.equalsIgnoreCase("1")){
+                            if (message.equalsIgnoreCase("1")){
+
+                            } else if (message.equalsIgnoreCase("2")) {
+
+                            }else if (message.equalsIgnoreCase("3")){
+
+                            }else if (message.equalsIgnoreCase("4")) {
+
+                            } else if (message.equalsIgnoreCase("5")) {
+
+                            } else if (message.equalsIgnoreCase("6")) {
+
+                            }
+
+                        } else if (sl.equalsIgnoreCase("2")) {
+                            if (message.equalsIgnoreCase("1")){
+
+                            } else if (message.equalsIgnoreCase("2")) {
+
+                            }else if (message.equalsIgnoreCase("3")){
+
+                            }else if (message.equalsIgnoreCase("4")) {
+
+                            } else if (message.equalsIgnoreCase("5")) {
+
+                            } else if (message.equalsIgnoreCase("6")) {
+
+                            }
+
+
+                        } else if (sl.equalsIgnoreCase("3")) {
+                            if (message.equalsIgnoreCase("1")){
+
+                            } else if (message.equalsIgnoreCase("2")) {
+
+                            }else if (message.equalsIgnoreCase("3")){
+
+                            }else if (message.equalsIgnoreCase("4")) {
+
+                            } else if (message.equalsIgnoreCase("5")) {
+
+                            } else if (message.equalsIgnoreCase("6")) {
+
+                            }
+
+
+                        }
+
                     }
                 }
 
