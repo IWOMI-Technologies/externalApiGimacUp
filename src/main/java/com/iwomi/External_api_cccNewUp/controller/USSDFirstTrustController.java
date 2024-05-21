@@ -9,6 +9,7 @@ import com.iwomi.External_api_cccNewUp.repository.LabelRepository;
 import com.iwomi.External_api_cccNewUp.repository.UserSessionRepo;
 import com.iwomi.External_api_cccNewUp.repository.UssdfirstpageRepository;
 import com.iwomi.External_api_cccNewUp.repository.HomepageRepository;
+import com.iwomi.External_api_cccNewUp.ussd.Dto.TransactionDto;
 import com.iwomi.External_api_cccNewUp.ussd.service.UssdFirstTrustService;
 
 import java.util.*;
@@ -212,8 +213,8 @@ public class USSDFirstTrustController {
     }
 
     //main endpoint service function
-    @RequestMapping(value = "/endpoint", method = RequestMethod.POST)
-    ResponseEntity<String> enpoint(@RequestBody Map<String, Object> payload) {
+    @RequestMapping(value = "/endpoint22", method = RequestMethod.POST)
+    ResponseEntity<String> enpoint22(@RequestBody Map<String, Object> payload) {
         System.out.println("yvo login Test3 de USSD:  " + payload.toString());
         String msisdn1 = checkPayload(payload, "msisdn").toString();
         String sessionid1 = checkPayload(payload, "sessionid").toString();
@@ -854,22 +855,25 @@ public class USSDFirstTrustController {
                             } else {
                                 Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                                 Map<String, Object> checkipinfinal = checkPinU(msisdn,message);
-                                Map<String,String> resp= new HashMap<>();
-                                resp.put("telephone",msisdn);
+                                //Map<String,String> resp= new HashMap<>();
+                                /*resp.put("telephone",msisdn);
                                 resp.put("pin",hash(message));
                                 resp.put("member",member);
                                 resp.put("codewalop",num);
                                 resp.put("amount",amt);
                                 resp.put("nat",nat);
-                                resp.put("region",region);
-                                Map<String,String> processpaymt= requestPaiement(resp);
+                                resp.put("region",region);*/
+                                TransactionDto resp = TransactionDto.builder()
+                                        //.pin(hash(message)).amount(amt).codewalop(num).nat().member().region(RegionEnum.LOCAL).telephone(msisdn)
+                                        .build();
+                                Map<String,Object> processpaymt= requestPaiement(resp);
                                 System.out.println("ace made the payment"+ resp);
                                 if (verif.get("result").toString().equalsIgnoreCase("ok")) {
-                                    if ( processpaymt.get("success").equalsIgnoreCase("01")){
+                                    if ( processpaymt.get("success").toString().equalsIgnoreCase("01")){
                                         map.put("response", "transaction successfull");
                                         map.put("message", processpaymt.get("data"));
                                         map.put("command", 7);
-                                    } else if (processpaymt.get("success").equalsIgnoreCase("100")) {
+                                    } else if (processpaymt.get("success").toString().equalsIgnoreCase("100")) {
                                         map.put("message", processpaymt.get("data"));
                                     }
                                 } else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
@@ -3654,10 +3658,10 @@ public class USSDFirstTrustController {
     }
 
     @RequestMapping(value = "/requestpayment", method = RequestMethod.POST)
-    public Map<String, String> requestPaiement(@RequestBody Map<String,String> payload) {
-        Map<String, Object> obj = addlistfunction(payload);
-        System.out.println(obj);
-        return ussdFirstTrustService.addListPaiement(obj);
+    public Map<String, Object> requestPaiement(@RequestBody TransactionDto payload) {
+       // Map<String, Object> obj = addlistfunction(payload);
+        System.out.println(payload);
+        return ussdFirstTrustService.addListPaiement(payload);
     }
     @RequestMapping(value = "/getwalletinq2", method = RequestMethod.POST)
     public Map<String, Object> getwalletinq2(@RequestBody Map<String, String> payload) {
@@ -3695,12 +3699,12 @@ public class USSDFirstTrustController {
         String pin =hash(pinuser);
         return ussdFirstTrustService.CheckPin(tel,pin);
     }
-    @RequestMapping(value = "/getNomencTabcdAcscd", method = RequestMethod.POST)
+   /* @RequestMapping(value = "/getNomencTabcdAcscd", method = RequestMethod.POST)
     public Map<String, Object> getNomencTabcdAcscd(@RequestBody Map<String, String> payload) throws Exception {
         System.out.println("yvo recuperation en local: getNomencTabcd");
         System.out.println(payload);
         return ussdFirstTrustService.getNomencTabcdAcscd(payload.get("tabcd"),payload.get("acscd"),payload.get("etab"));
-    }
+    }*/
     @RequestMapping(value = "/getCli", method = RequestMethod.POST)
     public Map<String, Object> getcli(@RequestBody Map<String,String> telephone){
         return  ussdFirstTrustService.getCli(telephone);

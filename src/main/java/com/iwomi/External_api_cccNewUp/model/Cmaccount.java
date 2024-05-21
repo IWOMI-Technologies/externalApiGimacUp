@@ -13,8 +13,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "partnercmw")
-public class PartnerCmW implements Serializable {
+@Table(name = "cm_acctype")
+public class Cmaccount implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +43,10 @@ public class PartnerCmW implements Serializable {
     }
     @Override
     public boolean equals(final Object object) {
-        if (!(object instanceof PartnerCmW)) {
+        if (!(object instanceof Cmaccount)) {
             return false;
         }
-        final PartnerCmW other = (PartnerCmW)object;
+        final Cmaccount other = (Cmaccount)object;
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
@@ -55,4 +55,3 @@ public class PartnerCmW implements Serializable {
         return "entities.Partner[ ids=" + this.id + " ]";
     }
 }
-

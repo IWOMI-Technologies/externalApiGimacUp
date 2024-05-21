@@ -13,8 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "partnercm")
-
+@Table(name = "partnercmbk")
 public class PartnerCmBk implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -53,7 +52,7 @@ public class PartnerCmBk implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.PartnerCmBk[ ids=" + this.id + " ]";
+        return "entities.partnerCmBk[ ids=" + this.id + " ]";
     }
 }
 

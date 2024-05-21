@@ -13,6 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.iwomi.External_api_cccNewUp.ussd.Core.GlobalResponse;
+import com.iwomi.External_api_cccNewUp.ussd.Dto.EditPinDto;
+import com.iwomi.External_api_cccNewUp.ussd.Dto.TransactionDto;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.aspectj.weaver.ast.Var;
@@ -20,10 +23,7 @@ import org.hibernate.mapping.Array;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -266,19 +266,19 @@ public class UssdFirstTrustService {
     }
 
 
-    public Map<String, String> addListPaiement(Map<String, Object> payload) {
+    public Map<String, Object> addListPaiement(TransactionDto payload) {
         Map<String, Object> res = new HashMap<>();
         String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        HttpEntity<?> entity = new HttpEntity<>(payload, headers);
         RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/addPaiementGimac", entity, String.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
 
-        Map<String, String> resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
         JSONObject jsd = new JSONObject();
         System.out.println("body :" + response.getBody());
         response.getStatusCode();
@@ -520,28 +520,24 @@ public class UssdFirstTrustService {
         return newData;
     }*/
 
-    public Map<String,Object> editpin(Map<String,Object> payload){
-
-        String baseUrel = "http://192.168.30.59:8084/";
-        //String baseUrel = "http://localhost:8084/";
+    public Map<String, Object>  editpin(EditPinDto payload){
+        //String baseUrel = "http://192.168.30.59:8084/";
+        String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        HttpEntity<?> entity = new HttpEntity<>(payload, headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/changePinU", entity, String.class);
+        ResponseEntity<Map> response = restTemplate.postForEntity(baseUrel + "/digitalbank/changePinU", entity, Map.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
         Map<String, Object> resp = new HashMap<>();
-        if (response.getStatusCodeValue() == 200) {
-            System.out.println("Token :" + response.getBody());
-            resp.put("status", "01");
-            resp.put("message", "oldpin incorrect");
-            resp.put("data", response.getBody());
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
+            System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
+            return GlobalResponse.responseBuilder3("::: successful :::","01", response.getBody());
         } else {
-            resp.put("status", "100");
-            resp.put("message", "oldpin incorrect");
-            resp.put("data", null);
+            System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
+            return GlobalResponse.responseBuilder3("::: oldpin incorrect :::", "100", null);
         }
-        return resp;
     }
 
     public String generateHash(String toHash) {
@@ -569,13 +565,41 @@ public class UssdFirstTrustService {
         }
         return sb.toString();
     }
-    public Map<String, Object> getNomencTabcdAcscd(String tabcd,String acscd,String etab) {
-        Map<String, Object> response= new HashMap<>();
-        Nomenclature t = nomenclatureRepository.findUrl2(tabcd,acscd,"0", etab);
-        response.put("success", "01");
-        response.put("message", "liste des infos");
-        response.put("data", t);
-        return response;
+    public ArrayList<Nomenclature>  getNomencTabcdAcscd() {
+       // String baseUrel = "http://192.168.30.59:8084/";
+        String baseUrel = "http://localhost:8084/";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ArrayList> response = restTemplate.getForEntity(baseUrel + "/digitalbank/getNomenDataByTabcdussd22", ArrayList.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
+            System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
+            return GlobalResponse.responseBuilder4("::: successful :::","01", response.getBody());
+        } else {
+            System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
+            return GlobalResponse.responseBuilder4("::: unsuccessful :::","100", null);
+        }
     }
+
+    public JSONArray trans(JSONArray data) {
+        JSONArray response1 = new JSONArray();
+        for (int i = 0; i < data.length(); i++) {
+            JSONObject ls = data.getJSONObject(i); // Access JSONObject by index
+            JSONObject res1 = new JSONObject();
+            res1.put("crtd", ls.get("data")); // Put JSONObject directly
+            response1.put(res1);
+        }
+        return response1;
+    }
+
+/* if (entity.getStatusCode() == HttpStatus.OK) {
+        System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
+        System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + entity.getBody().getClass());
+        return GlobalResponse.responseBuilder("::: successful :::", HttpStatus.CREATED,"01", entity.getBody());
+    } else {
+        System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
+        return GlobalResponse.responseBuilder("::: unsuccessful :::", HttpStatus.BAD_REQUEST,"100", null);
+    }*/
 }
 

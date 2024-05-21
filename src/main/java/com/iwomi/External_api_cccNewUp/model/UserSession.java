@@ -37,7 +37,8 @@ public class UserSession implements Serializable {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     public String pos;//position or page
-    public String preval;//previous value selected or entered
+    public String preval;
+    public String preval2;//previous value selected or entered
     public Boolean iscon;//if connected or not
     public String lang = "en";
     public String oldpin;

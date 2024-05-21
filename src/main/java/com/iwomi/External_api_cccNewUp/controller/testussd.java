@@ -2,10 +2,14 @@ package com.iwomi.External_api_cccNewUp.controller;
 
 import com.iwomi.External_api_cccNewUp.model.*;
 import com.iwomi.External_api_cccNewUp.repository.*;
+import com.iwomi.External_api_cccNewUp.ussd.Dto.EditPinDto;
+import com.iwomi.External_api_cccNewUp.ussd.Dto.TransactionDto;
+import com.iwomi.External_api_cccNewUp.ussd.Enum.RegionEnum;
 import com.iwomi.External_api_cccNewUp.ussd.service.UssdFirstTrustService;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,6 +29,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 
 public class testussd {
+
+    @Value("${digitalbackoffice.url}")
+    private String digitalUrl;
     private static final Map<String, String> res = new HashMap<>();
     @Autowired
     UssdfirstpageRepository ussdfirstpageRepository;
@@ -57,9 +61,11 @@ public class testussd {
     PartnerCmBkRepo partnerCmBkRepo;
     @Autowired
     PartnerCmWRepo partnerCmWRepo;
+    @Autowired
+    CmaccRepo cmaccRepo;
 
-    @RequestMapping(value = "/endpointgimac", method = RequestMethod.POST)
-    ResponseEntity<String> enpointgimac(@RequestBody Map<String, Object> payload) {
+    @RequestMapping(value = "/endpoint", method = RequestMethod.POST)
+    ResponseEntity<String> endpoint(@RequestBody Map<String, Object> payload) throws Exception {
         System.out.println("yvo login Test3 de USSD:  " + payload.toString());
         String msisdn1 = checkPayload(payload, "msisdn").toString();
         String sessionid1 = checkPayload(payload, "sessionid").toString();
@@ -79,9 +85,11 @@ public class testussd {
                 .stream()
                 .sorted(Comparator.comparing(Homepage::getRang))
                 .collect(Collectors.toList());
+
         /***
          * USSD START
          */
+
         if (user != null) {
             int max1 = user.getMax();
             int iter1 = user.getIterator();
@@ -133,7 +141,7 @@ public class testussd {
                     if (pos.equalsIgnoreCase("1")) {
                         String menuElements = getValueByKey("menu_head", labels)[1];
                         for (Ussdfirstpage element : sortedMenuftsl) {
-                            menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                            menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                         }
                         text = menuElements;
                         map.put("message", text);
@@ -144,7 +152,7 @@ public class testussd {
                         user.setRegion("local");
                         user.setMenulevel("1");
                         usersRepo.save(user);
-                        map.put("command", 1);
+                        map.put("command", 2);
 
                     } else if (pos.equalsIgnoreCase("2")) {
 
@@ -152,6 +160,8 @@ public class testussd {
                          * MONEY TRANSFER
                          */
                         if (message.equalsIgnoreCase("1")) {
+                            System.out.println("::::::::::::: transfert dargent :::::::::::");
+                            System.out.println("::::::::::::: transfert dargent :::::::::::");
                             List<Ftsltranspage> trans = ftsltranspage.findActive()
                                     .stream()
                                     .sorted(Comparator.comparing(Ftsltranspage::getRang))
@@ -159,7 +169,7 @@ public class testussd {
 
                             String menuElements = getValueByKey("select_acc_credit", labels)[1];
                             for (Ftsltranspage element : trans) {
-                                menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                             }
                             text = menuElements;
                             map.put("message", text);
@@ -168,6 +178,7 @@ public class testussd {
                             user.setMenulevel("1");
                             user.setSublevel(message);
                             usersRepo.save(user);
+                            map.put("command", 3);
 
                             /***
                              * CHECK ACCOUNT BALANCE
@@ -180,6 +191,7 @@ public class testussd {
                             user.setMenulevel("1");
                             user.setSublevel(message);
                             usersRepo.save(user);
+                            map.put("command", 3);
 
                             /***
                              * MAKE LOANS
@@ -189,7 +201,7 @@ public class testussd {
                             System.out.println("rynnnnnn fabri" + DB);
                             String menuElements = getValueByKey("menu_head", labels)[1];
                             for (Loans element : DB) {
-                                menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                             }
                             map.put("message", menuElements);
                             user.setPos("3");
@@ -197,6 +209,7 @@ public class testussd {
                             user.setMenulevel("1");
                             user.setSublevel(message);
                             usersRepo.save(user);
+                            map.put("command", 3);
 
                             /***
                              * ACCOUNT MANAGEMENT
@@ -205,7 +218,7 @@ public class testussd {
                             List<Myaccount> ls = myaccountRepository.findActive();
                             String menuElements = getValueByKey("acc_manag_page", labels)[1];
                             for (Myaccount element : ls) {
-                                menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                             }
                             map.put("message", menuElements);
                             user.setPos("3");
@@ -213,34 +226,38 @@ public class testussd {
                             user.setMenulevel("1");
                             user.setSublevel(message);
                             usersRepo.save(user);
+                            map.put("command", 3);
 
                         } else if (message.equalsIgnoreCase("7777")) {
                             String menu_elements = this.getValueByKey("homepage", labels)[1];
                             for (Homepage elements : layout) {
                                 int va = elements.getRang();
-                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
+                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
                             }
                             text = menu_elements;
                             map.put("message", text);
                             user.setPos("1");
                             user.setMenulevel("1");
                             usersRepo.save(user);
+                            map.put("command", 1);
 
                         } else if (message.equalsIgnoreCase("9999")) {
                             String menu_elements = this.getValueByKey("homepage", labels)[1];
                             for (Homepage elements : layout) {
                                 int va = elements.getRang();
-                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
+                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
                             }
                             text = menu_elements;
                             map.put("message", text);
                             user.setPos("1");
                             user.setMenulevel("1");
                             usersRepo.save(user);
+                            map.put("command", 1);
 
                         } else if (message.equalsIgnoreCase("99")) {
                             String menuElements = getValueByKey("exit_msg", labels)[1];
                             map.put("message", menuElements);
+                            map.put("command", 0);
                         }
 
                     } else if (pos.equalsIgnoreCase("3")) {
@@ -256,6 +273,7 @@ public class testussd {
                                 user.setPreval("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("2")) {
                                 String menuElements = getValueByKey("ACC_credit", labels)[1];
@@ -264,23 +282,25 @@ public class testussd {
                                 user.setPreval("2");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
                                 for (Homepage elements : layout) {
                                     int va = elements.getRang();
-                                    menu_elements = menu_elements + "\n" + va + " : " + elements.getValen();
+                                    menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
                                 }
                                 text = menu_elements;
                                 map.put("message", text);
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 String menuElements = getValueByKey("menu_head", labels)[1];
                                 for (Ussdfirstpage element : sortedMenuftsl) {
-                                    menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                    menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                                 }
                                 text = menuElements;
                                 map.put("message", text);
@@ -291,11 +311,12 @@ public class testussd {
                                 user.setRegion("local");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
-                                map.put("command", 1);
+                                map.put("command", 2);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
                             }
 
                             /***
@@ -314,6 +335,7 @@ public class testussd {
                                     user.setPreval("2");
                                     user.setMenulevel("1");// keep it to menu message
                                     usersRepo.save(user);
+                                    map.put("command", 4);
                                 }
                             } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                 if (max1 == iter3) {
@@ -327,11 +349,13 @@ public class testussd {
                                     user.setPreval("2");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
+                                    map.put("command", 3);
                                 }
                             }
                             /***
                              * MAKE LOANS
                              */
+
                         } else if (sl.equalsIgnoreCase("3")) {
                             if (message.equalsIgnoreCase("1")) {
                                 String menuElements = getValueByKey("loan_page", labels)[1];
@@ -340,6 +364,7 @@ public class testussd {
                                 user.setPreval("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("2")) {
                                 String menuElements = getValueByKey("loan_page", labels)[1];
@@ -348,6 +373,7 @@ public class testussd {
                                 user.setPreval("2");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
@@ -360,6 +386,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 String menuElements = getValueByKey("menu_head", labels)[1];
@@ -375,13 +402,15 @@ public class testussd {
                                 user.setRegion("local");
                                 user.setMenulevel("1");
                                 usersRepo.saveAndFlush(user);
-                                map.put("command", 1);
+                                map.put("command", 2);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
-                            } /***
+                            }
+                            /***
                              * ACCOUNT MANAGEMENT
                              */
                         } else if (sl.equalsIgnoreCase("4")) {
@@ -399,6 +428,7 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setPreval("1");
                                 usersRepo.saveAndFlush(user);
+                                map.put("command", 4);
                                 /***
                                  * THIS IS TO VIEW YOUR TRANSACTIONS
                                  */
@@ -409,6 +439,7 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setPreval("2");
                                 usersRepo.saveAndFlush(user);
+                                map.put("command", 4);
                                 /***
                                  * THIS IS TO CHANGE PIN
                                  */
@@ -419,6 +450,7 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setPreval("3");
                                 usersRepo.saveAndFlush(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 String menuElements = getValueByKey("menu_head", labels)[1];
@@ -434,11 +466,12 @@ public class testussd {
                                 user.setRegion("local");
                                 user.setMenulevel("1");
                                 usersRepo.saveAndFlush(user);
-                                map.put("command", 1);
+                                map.put("command", 2);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
@@ -451,6 +484,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
                             }
                         }
 
@@ -469,6 +503,8 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
+
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Ftsltranspage> trans = ftsltranspage.findActive()
@@ -487,10 +523,12 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("1")) {
@@ -502,6 +540,7 @@ public class testussd {
                                         user.setTranstel(message);
                                         user.setMenulevel("1");// keep it to menu message
                                         usersRepo.save(user);
+                                        map.put("command", 5);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter1) {
@@ -515,7 +554,7 @@ public class testussd {
                                             user.setPreval("1");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
-                                            map.put("command", 3);
+                                            map.put("command", 4);
                                         }
 
                                     }
@@ -527,13 +566,14 @@ public class testussd {
                                     user.setTransacc(message);
                                     user.setMenulevel("1");// keep it to menu message
                                     usersRepo.save(user);
+                                    map.put("command", 5);
                                 }
                             }
 
                         } else if (sl.equalsIgnoreCase("2")) {
                             String menuElements = getValueByKey("exit_msg", labels)[1];
                             map.put("message", menuElements);
-                            user.setPos("5");
+                            map.put("command", 0);
 
                         } else if (sl.equalsIgnoreCase("3")) {
                             if (message.equalsIgnoreCase("9999")) {
@@ -547,6 +587,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Loans> DB = loanRepo.findActive();
@@ -561,10 +602,12 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("3");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("1")) {
@@ -576,6 +619,7 @@ public class testussd {
                                         user.setAmount(message);
                                         user.setMenulevel("1");
                                         usersRepo.save(user);
+                                        map.put("command", 5);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter2) {
@@ -602,6 +646,7 @@ public class testussd {
                                         user.setAmount(message);
                                         user.setMenulevel("1");
                                         usersRepo.save(user);
+                                        map.put("command", 5);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter2) {
@@ -615,7 +660,7 @@ public class testussd {
                                             user.setPreval("1");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
-                                            map.put("command", 3);
+                                            map.put("command", 4);
                                         }
                                     }
                                 }
@@ -633,6 +678,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Myaccount> ls = myaccountRepository.findActive();
@@ -646,31 +692,38 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("4");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("1")) {
+                                    /***
+                                     * for changing language
+                                     */
 
                                 } else if (pv.equalsIgnoreCase("2")) {
                                     Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                                     if (verif.get("result").toString().equalsIgnoreCase("ok")) {
                                         Map<String, Object> checkpinfinal = checkPinU(msisdn, message);
                                         if (checkpinfinal.get("success").toString().equalsIgnoreCase("01")) {
-                                            /****ADD TRANS API INFO OF THE USER */
-                                        /*res.put("telephone",msisdn);
-                                        Map<String,String> solde = getsolde(res);*/
+                                            /****
+                                             * ADD TRANS API INFO OF THE USER
+                                             * */
                                             String menuElements = getValueByKey("last_trans_msg", labels)[1];
                                             map.put("message", menuElements);
                                             user.setPos("5");
                                             user.setMenulevel("1");// keep it to menu message
                                             usersRepo.save(user);
+                                            map.put("command", 5);
                                         }
+
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter3) {
-                                            map.put("message", verif.get("result").toString());
+                                            map.put("message", "max trial exceeded please try again later");
                                             map.put("command", 0);
                                         } else {
                                             String lastms = verif.get("textformat").toString();
@@ -680,6 +733,7 @@ public class testussd {
                                             user.setPreval("2");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
+                                            map.put("command", 4);
                                         }
                                     }
                                 } else if (pv.equalsIgnoreCase("3")) {
@@ -693,6 +747,7 @@ public class testussd {
                                             user.setPos("5");
                                             user.setMenulevel("1");// keep it to menu message
                                             usersRepo.save(user);
+                                            map.put("command", 5);
                                         }
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter3) {
@@ -706,6 +761,7 @@ public class testussd {
                                             user.setPreval("3");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
+                                            map.put("command", 4);
                                         }
                                     }
                                 }
@@ -716,7 +772,6 @@ public class testussd {
                         String sl = user.getSublevel();
                         String pv = user.getPreval();
                         if (sl.equalsIgnoreCase("1")) {
-
                             if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
                                 for (Homepage elements : layout) {
@@ -728,6 +783,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 0);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Ftsltranspage> trans = ftsltranspage.findActive()
@@ -746,14 +802,15 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("1")) {
-
                                     Map<String, Object> verif = amounttest(message, max1, iter2);
                                     if (verif.get("result").toString().equalsIgnoreCase("ok")) {
                                         String menuElements = getValueByKey("ref_msg", labels)[1];
@@ -762,6 +819,7 @@ public class testussd {
                                         user.setAmount(message);
                                         user.setMenulevel("1");
                                         usersRepo.save(user);
+                                        map.put("command", 6);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter2) {
@@ -775,7 +833,7 @@ public class testussd {
                                             user.setPreval("1");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
-                                            map.put("command", 3);
+                                            map.put("command", 5);
                                         }
                                     }
                                 } else if (pv.equalsIgnoreCase("2")) {
@@ -788,6 +846,7 @@ public class testussd {
                                         user.setAmount(message);
                                         user.setMenulevel("1");
                                         usersRepo.save(user);
+                                        map.put("command", 6);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter2) {
@@ -801,7 +860,7 @@ public class testussd {
                                             user.setPreval("1");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
-                                            map.put("command", 3);
+                                            map.put("command", 5);
                                         }
                                     }
                                 }
@@ -819,10 +878,11 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Loans> DB = loanRepo.findActive();
-                                System.out.println("rynnnnnn fabri" + DB);
+                                System.out.println("::::::::::::::rynnnnnn fabri" + DB);
                                 String menuElements = getValueByKey("menu_head", labels)[1];
                                 for (Loans element : DB) {
                                     menuElements += "\n" + element.getRang() + " : " + element.getValen();
@@ -833,10 +893,12 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("3");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("1")) {
@@ -847,6 +909,7 @@ public class testussd {
                                     user.setMotif(message);
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
+                                    map.put("command", 6);
 
                                 } else if (pv.equalsIgnoreCase("2")) {
                                     String menuElements = getValueByKey("loan_finilisation", labels)[1];
@@ -856,6 +919,7 @@ public class testussd {
                                     user.setMotif(message);
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
+                                    map.put("command", 6);
                                 }
                             }
                         } else if (sl.equalsIgnoreCase("4")) {
@@ -870,6 +934,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Myaccount> ls = myaccountRepository.findActive();
@@ -883,10 +948,12 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("4");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
                             } else {
                                 if (pv.equalsIgnoreCase("3")) {
@@ -898,6 +965,7 @@ public class testussd {
                                         user.setPos("6");
                                         user.setMenulevel("1");// keep it to menu message
                                         usersRepo.save(user);
+                                        map.put("command", 6);
 
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter3) {
@@ -911,6 +979,7 @@ public class testussd {
                                             user.setPreval("2");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
+                                            map.put("command", 5);
                                         }
                                     }
                                 }
@@ -920,7 +989,7 @@ public class testussd {
                     } else if (pos.equalsIgnoreCase("6")) {
                         String sl = user.getSublevel();
                         String pv = user.getPreval();
-                        if (sl.equalsIgnoreCase("1")){
+                        if (sl.equalsIgnoreCase("1")) {
                             if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
                                 for (Homepage elements : layout) {
@@ -932,6 +1001,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Ftsltranspage> trans = ftsltranspage.findActive()
@@ -950,53 +1020,58 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
-                            }else {
-                               if (pv.equalsIgnoreCase("1")){
-                                   String menuElements = getValueByKey("enter_pin_confirm_trans", labels)[1];
-                                   for (Back_home element : backmenu) {
-                                       menuElements += "\n" + element.getRang() + " : " + element.getValen();
-                                   }
-                                   if (pv.equalsIgnoreCase("1")){
-                                       String sdk = getValueByKey("check_info", labels)[1];
-                                       Map<String,String> resp= new HashMap<>();
-                                       resp.put("telephone",num);
-                                       System.out.println("ace made the payment" + menuElements);
-                                       Map<String,String> info= getwalletinqFTSL(resp);
-                                       if (info.get("status").equalsIgnoreCase("01")) {
-                                           map.put("message", sdk + amt + "to" + info.get("name") + menuElements  );
-                                           user.setPos("7");
-                                           user.setMenulevel("1");// keep it to menu message
-                                           usersRepo.save(user);
-                                       }
-                                   }
-                               } else if (pv.equalsIgnoreCase("2")) {
-                                   String menuElements = getValueByKey("enter_pin_confirm_trans", labels)[1];
-                                   for (Back_home element : backmenu) {
-                                       menuElements += "\n" + element.getRang() + " : " + element.getValen();
-                                   }
-                                   if (pv.equalsIgnoreCase("1")){
-                                       String sdk = getValueByKey("check_info", labels)[1];
-                                       Map<String,String> resp= new HashMap<>();
-                                       resp.put("telephone",num);
-                                       System.out.println("ace made the payment" + menuElements);
-                                       Map<String,String> info= getwalletinqFTSL(resp);
-                                       if (info.get("status").equalsIgnoreCase("01")) {
-                                           map.put("message", sdk + amt + "to" + info.get("name") + menuElements  );
-                                           user.setPos("7");
-                                           user.setMenulevel("1");// keep it to menu message
-                                           usersRepo.save(user);
+                            } else {
+                                if (pv.equalsIgnoreCase("1")) {
+                                    String menuElements = getValueByKey("enter_pin_confirm_trans", labels)[1];
+                                    for (Back_home element : backmenu) {
+                                        menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                    }
+                                    if (pv.equalsIgnoreCase("1")) {
+                                        String sdk = getValueByKey("check_info", labels)[1];
+                                        Map<String, String> resp = new HashMap<>();
+                                        resp.put("telephone", num);
+                                        System.out.println("::::::::::::::::: ace made the payment" + menuElements);
+                                        Map<String, String> info = getwalletinqFTSL(resp);
+                                        if (info.get("status").equalsIgnoreCase("01")) {
+                                            map.put("message", sdk + amt+     "to"   + info.get("name") + menuElements);
+                                            user.setPos("7");
+                                            user.setMenulevel("1");// keep it to menu message
+                                            usersRepo.save(user);
+                                            map.put("command", 7);
+                                        }
+                                    }
+                                } else if (pv.equalsIgnoreCase("2")) {
+                                    String menuElements = getValueByKey("enter_pin_confirm_trans", labels)[1];
+                                    for (Back_home element : backmenu) {
+                                        menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                                    }
+                                    if (pv.equalsIgnoreCase("1")) {
+                                        String sdk = getValueByKey("check_info", labels)[1];
+                                        Map<String, String> resp = new HashMap<>();
+                                        resp.put("telephone", num);
+                                        System.out.println(":::::::::::::ace made the payment" + menuElements);
+                                        Map<String, String> info = getwalletinqFTSL(resp);
+                                        if (info.get("status").equalsIgnoreCase("01")) {
+                                            map.put("message", sdk + amt + "to" + info.get("name") + menuElements);
+                                            user.setPos("7");
+                                            user.setMenulevel("1");// keep it to menu message
+                                            usersRepo.save(user);
+                                            map.put("command", 7);
 
 
-                                       }
-                                   }
-                               }
+                                        }
+                                    }
+                                }
                             }
-                        }if (sl.equalsIgnoreCase("4")){
+                        }
+                        if (sl.equalsIgnoreCase("4")) {
                             if (message.equalsIgnoreCase("9999")) {
                                 String menu_elements = this.getValueByKey("homepage", labels)[1];
                                 for (Homepage elements : layout) {
@@ -1008,6 +1083,7 @@ public class testussd {
                                 user.setPos("1");
                                 user.setMenulevel("1");
                                 usersRepo.save(user);
+                                map.put("command", 1);
 
                             } else if (message.equalsIgnoreCase("7777")) {
                                 List<Myaccount> ls = myaccountRepository.findActive();
@@ -1021,34 +1097,43 @@ public class testussd {
                                 user.setMenulevel("1");
                                 user.setSublevel("4");
                                 usersRepo.save(user);
+                                map.put("command", 3);
 
                             } else if (message.equalsIgnoreCase("99")) {
                                 String menuElements = getValueByKey("exit_msg", labels)[1];
                                 map.put("message", menuElements);
+                                map.put("command", 0);
 
-                            } else{
+                            } else {
                                 String op = user.getOldpin();
                                 String np = user.getNewpin();
-                                if (pv.equalsIgnoreCase("3")){
-                                    System.out.println("yvo recuperation en local");
+                                if (pv.equalsIgnoreCase("3")) {
+                                    System.out.println("::::::::::::::dd.ace recuperation en local");
                                     Map<String, Object> verif = pinverifiaction(message, max1, iter3);
-                                    System.out.println("yvo recuperation en local");
-                                    if (verif.get("result").toString().equalsIgnoreCase("ok")){
-                                        System.out.println("yvo recuperation en local" + verif);
-                                        Map<String,String> comp = comparator(hash(message),np);
-                                        System.out.println("yvo recuperation en local"+ comp);
-                                        if (comp.get("message").equalsIgnoreCase("ok")){
+                                    System.out.println("::::::::::::::dd.ace recuperation en local");
+                                    if (verif.get("result").toString().equalsIgnoreCase("ok")) {
+                                        System.out.println("::::::::::dd.ace recuperation en local" + verif);
+                                        Map<String, String> comp = comparator(hash(message), np);
+                                        System.out.println(":::::::::dd.ace recuperation en local" + comp);
+                                        if (comp.get("message").equalsIgnoreCase("ok")) {
                                             /***
                                              * ADD THE API SERVICE FOR PIN MODIFICATION
                                              */
-                                            Map<String,Object> resp = new HashMap<>();
-                                            resp.put("tel",msisdn);
-                                            resp.put("oldpin",op);
-                                            resp.put("newpin",np);
-                                            Map<String,Object> modifpin = changePin(resp);
+                                           EditPinDto resp = EditPinDto.builder()
+                                                   .oldpin(op)
+                                                   .newpin(np)
+                                                   .tel(msisdn)
+                                                   .build();
+                                            Map<String, Object>  modifpin = changePin(resp);
 
                                         } else if (comp.get("message").equalsIgnoreCase("ko")) {
-
+                                            String menuElements = getValueByKey("newpin_notmatch", labels)[1];
+                                            map.put("message", menuElements);
+                                            user.setPos("3");
+                                            user.setPreval("2");
+                                            user.setMenulevel("1");
+                                            usersRepo.save(user);
+                                            map.put("command", 7);
                                         }
                                     } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                         if (max1 == iter3) {
@@ -1062,6 +1147,7 @@ public class testussd {
                                             user.setPreval("2");
                                             user.setMenulevel("1");
                                             usersRepo.save(user);
+                                            map.put("command", 6);
                                         }
                                     }
                                 }
@@ -1070,28 +1156,28 @@ public class testussd {
                     } else if (pos.equalsIgnoreCase("7")) {
                         String sl = user.getSublevel();
                         String pv = user.getPreval();
-                        if (sl.equalsIgnoreCase("1")){
+                        if (sl.equalsIgnoreCase("1")) {
                             Map<String, Object> verif = pinverifiaction(message, max1, iter3);
-                            Map<String, Object> checkipinfinal = checkPinU(msisdn,message);
-                            Map<String,String> resp= new HashMap<>();
-                            resp.put("telephone",msisdn);
-                            resp.put("pin",hash(message));
-                            resp.put("member",member);
-                            resp.put("codewalop",num);
-                            resp.put("amount",amt);
-                            resp.put("nat",nat);
-                            resp.put("region",region);
-                            Map<String,String> processpaymt= requestPaiement(resp);
-                            System.out.println("ace made the payment"+ resp);
+                            Map<String, Object> checkipinfinal = checkPinU(msisdn, message);
+                            ArrayList<Nomenclature> nm = getNomencTabcdAcscd();
+                            for(Nomenclature ls: nm){
+
+                            }
+                            TransactionDto resp = TransactionDto.builder()
+                                    //.pin(hash(message)).amount(amt).codewalop(num).nat().member().region(RegionEnum.LOCAL).telephone(msisdn)
+                                    .build();
+
+                            Map<String, Object>  processpaymt = requestPaiement(resp);
+                            System.out.println("ace made the payment" + resp);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
-                                if ( processpaymt.get("success").equalsIgnoreCase("01")){
+                                if (processpaymt.get("success").toString().equalsIgnoreCase("01")) {
                                     map.put("response", "transaction successfull");
                                     map.put("message", processpaymt.get("message"));
-                                    map.put("command", 7);
-                                } else if (processpaymt.get("success").equalsIgnoreCase("100")) {
+                                    map.put("command", 8);
+                                } else if (processpaymt.get("success").toString().equalsIgnoreCase("100")) {
                                     map.put("message", processpaymt.get("data"));
                                 }
-                            } else if (verif.get("result").toString().equalsIgnoreCase("ok1")){
+                            } else if (verif.get("result").toString().equalsIgnoreCase("ok1")) {
                                 if (max1 == iter3) {
                                     map.put("message", verif.get("result").toString());
                                     map.put("command", 0);
@@ -1103,7 +1189,7 @@ public class testussd {
                                     user.setPreval("4");
                                     user.setMenulevel("1");
                                     usersRepo.save(user);
-                                    map.put("command", 6);
+                                    map.put("command", 7);
                                 }
                             }
                         }
@@ -1113,7 +1199,8 @@ public class testussd {
                      * THIS IS THE GIMAC MENU LEVEL
                      */
 
-                    List<PartnerCmBk> prt = partnerCmBkRepo.findActive()
+                } else if (ml.equalsIgnoreCase("2")) {
+                    List<PartnerCmBk> prtbk = partnerCmBkRepo.findActive()
                             .stream()
                             .sorted(Comparator.comparing(PartnerCmBk::getRang))
                             .collect(Collectors.toList());
@@ -1123,8 +1210,6 @@ public class testussd {
                             .sorted(Comparator.comparing(PartnerCmW::getRang))
                             .collect(Collectors.toList());
 
-
-                } else if (ml.equalsIgnoreCase("2")) {
                     List<Country> ctymn = countryRepo.findActive()
                             .stream()
                             .sorted(Comparator.comparing(Country::getRang))
@@ -1133,31 +1218,40 @@ public class testussd {
                     if (pos.equalsIgnoreCase("1")) {
                         String menuElements = getValueByKey("gimachomepage", labels)[1];
                         for (gimacpage element : sortedMenu) {
-                            menuElements += "\n" + element.getRang() + " : " + element.getValen();
+                            menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                         }
                         text = menuElements;
                         map.put("message", text);
                         user.setPos("2");
                         user.setMenulevel("2");
                         usersRepo.save(user);
-                        map.put("command", 1);
+                        map.put("command", 2);
+
+                        /***
+                         * THIS IS FOR COUNTRIES
+                         */
 
                     } else if (pos.equalsIgnoreCase("2")) {
-                        if (message.equalsIgnoreCase("1")){
+                        /***
+                         * THIS IS FOR COUNTRIES MONEY TRANSFER
+                         */
+                        if (message.equalsIgnoreCase("1")) {
                             String menuElements = getValueByKey("choose_country", labels)[1];
                             for (Country element : ctymn) {
                                 menuElements += "\n" + element.getRang() + " : " + element.getValfr();
                             }
                             text = menuElements;
                             map.put("message", text);
-                            user.setNat("TRIN");
                             user.setPos("3");
                             user.setPreval("1");
                             user.setSublevel("1");
                             user.setMenulevel("2");
                             usersRepo.save(user);
-                            map.put("command", 1);
+                            map.put("command", 3);
 
+                            /***
+                             * THIS IS FOR COUNTRIES BILL PAYMENT
+                             */
                         } else if (message.equalsIgnoreCase("2")) {
                             String menuElements = getValueByKey("choose_country", labels)[1];
                             for (Country element : ctymn) {
@@ -1170,8 +1264,11 @@ public class testussd {
                             user.setSublevel("2");
                             user.setMenulevel("2");
                             usersRepo.save(user);
-                            map.put("command", 1);
+                            map.put("command", 3);
 
+                            /***
+                             * THIS IS FOR COUNTRIES MOBILE RELOAD
+                             */
                         } else if (message.equalsIgnoreCase("3")) {
                             String menuElements = getValueByKey("choose_country", labels)[1];
                             for (Country element : ctymn) {
@@ -1184,51 +1281,213 @@ public class testussd {
                             user.setSublevel("3");
                             user.setMenulevel("2");
                             usersRepo.save(user);
+                            map.put("command", 3);
+
+                        } else if (message.equalsIgnoreCase("7777")) {
+                            String menu_elements = this.getValueByKey("homepage", labels)[1];
+                            for (Homepage elements : layout) {
+                                int va = elements.getRang();
+                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                            }
+                            text = menu_elements;
+                            map.put("message", text);
+                            user.setPos("1");
+                            user.setMenulevel("1");
+                            usersRepo.save(user);
                             map.put("command", 1);
 
+                        } else if (message.equalsIgnoreCase("9999")) {
+                            String menu_elements = this.getValueByKey("homepage", labels)[1];
+                            for (Homepage elements : layout) {
+                                int va = elements.getRang();
+                                menu_elements = menu_elements + "\n" + va + " : " + elements.getValfr();
+                            }
+                            text = menu_elements;
+                            map.put("message", text);
+                            user.setPos("1");
+                            user.setMenulevel("1");
+                            usersRepo.save(user);
+                            map.put("command", 1);
+
+                        } else if (message.equalsIgnoreCase("99")) {
+                            String menuElements = getValueByKey("exit_msg", labels)[1];
+                            map.put("message", menuElements);
+                            map.put("command", 0);
                         }
+
+                        /***
+                         * THIS IS FOR ACCOUNTS & WALLETS
+                         */
 
                     } else if (pos.equalsIgnoreCase("3")) {
                         String sl = user.getSublevel();
-                        if (sl.equalsIgnoreCase("1")){
-                            if (message.equalsIgnoreCase("1")){
+                        if (sl.equalsIgnoreCase("1")) {
+                            if (message.equalsIgnoreCase("1")) {
+                                List<Cmaccount> acctype = cmaccRepo.findActive()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Cmaccount::getRang))
+                                        .collect(Collectors.toList());
+
+                                String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                for (Cmaccount ls : acctype) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("1");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
+
 
                             } else if (message.equalsIgnoreCase("2")) {
+                                    List<Cmaccount> acctype = cmaccRepo.findActive()
+                                            .stream()
+                                            .sorted(Comparator.comparing(Cmaccount::getRang))
+                                            .collect(Collectors.toList());
 
-                            }else if (message.equalsIgnoreCase("3")){
+                                    String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                    for (Cmaccount ls : acctype) {
+                                        menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                    }
+                                    text = menuEl;
+                                    map.put("message", text);
+                                    user.setPos("4");
+                                    user.setPreval("2");
+                                    user.setMenulevel("2");
+                                    usersRepo.save(user);
+                                    map.put("command", 4);
 
-                            }else if (message.equalsIgnoreCase("4")) {
+                            } else if (message.equalsIgnoreCase("3")) {
+                                List<Cmaccount> acctype = cmaccRepo.findActive()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Cmaccount::getRang))
+                                        .collect(Collectors.toList());
+
+                                String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                for (Cmaccount ls : acctype) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("3");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
+
+                            } else if (message.equalsIgnoreCase("4")) {
+                                List<Cmaccount> acctype = cmaccRepo.findActive()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Cmaccount::getRang))
+                                        .collect(Collectors.toList());
+
+                                String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                for (Cmaccount ls : acctype) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("4");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("5")) {
+                                List<Cmaccount> acctype = cmaccRepo.findActive()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Cmaccount::getRang))
+                                        .collect(Collectors.toList());
+
+                                String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                for (Cmaccount ls : acctype) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("5");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("6")) {
+                                List<Cmaccount> acctype = cmaccRepo.findActive()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Cmaccount::getRang))
+                                        .collect(Collectors.toList());
 
+                                String menuEl = getValueByKey("select_acc_credit", labels)[1];
+                                for (Cmaccount ls : acctype) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("6");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
                             }
 
+                            /***
+                             * THIS IS FOR BILL PAYMENT PARTNERS
+                             */
                         } else if (sl.equalsIgnoreCase("2")) {
-                            if (message.equalsIgnoreCase("1")){
+                            if (message.equalsIgnoreCase("1")) {
+                                String menuEl = getValueByKey("choose_partner", labels)[1];
+                                for (PartnerCmW ls : wal) {
+                                    menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                }
+                                text = menuEl;
+                                map.put("message", text);
+                                user.setPos("4");
+                                user.setPreval("1");
+                                user.setMenulevel("2");
+                                usersRepo.save(user);
+                                map.put("command", 4);
 
                             } else if (message.equalsIgnoreCase("2")) {
+                                String menuEl = getValueByKey("out_of_service", labels)[1];
+                                map.put("message", menuEl);
+                                map.put("command", 0);
 
-                            }else if (message.equalsIgnoreCase("3")){
+                            } else if (message.equalsIgnoreCase("3")) {
+                                String menuEl = getValueByKey("out_of_service", labels)[1];
+                                map.put("message", menuEl);
+                                map.put("command", 0);
 
-                            }else if (message.equalsIgnoreCase("4")) {
+                            } else if (message.equalsIgnoreCase("4")) {
+                                String menuEl = getValueByKey("out_of_service", labels)[1];
+                                map.put("message", menuEl);
+                                map.put("command", 0);
 
                             } else if (message.equalsIgnoreCase("5")) {
+                                String menuEl = getValueByKey("out_of_service", labels)[1];
+                                map.put("message", menuEl);
+                                map.put("command", 0);
 
                             } else if (message.equalsIgnoreCase("6")) {
+                                String menuEl = getValueByKey("out_of_service", labels)[1];
+                                map.put("message", menuEl);
+                                map.put("command", 0);
 
                             }
 
 
+                            /***
+                             * THIS IS FOR MOBILE RELOAD PARTNERS
+                             */
                         } else if (sl.equalsIgnoreCase("3")) {
-                            if (message.equalsIgnoreCase("1")){
+                            if (message.equalsIgnoreCase("1")) {
 
                             } else if (message.equalsIgnoreCase("2")) {
 
-                            }else if (message.equalsIgnoreCase("3")){
+                            } else if (message.equalsIgnoreCase("3")) {
 
-                            }else if (message.equalsIgnoreCase("4")) {
+                            } else if (message.equalsIgnoreCase("4")) {
 
                             } else if (message.equalsIgnoreCase("5")) {
 
@@ -1238,7 +1497,108 @@ public class testussd {
 
 
                         }
+                    }
 
+                    /***
+                     * THIS IS FOR PARTNERS CAMEROON
+                     */
+
+                    if (pos.equalsIgnoreCase("4")) {
+                        String pv = user.getPreval();
+                        String sl = user.getSublevel();
+                        if (sl.equalsIgnoreCase("1")) {
+                            if (pv.equalsIgnoreCase("1")) {
+                                if (message.equalsIgnoreCase("1")) {
+                                    String menuEl = getValueByKey("choose_partner", labels)[1];
+                                    for (PartnerCmW ls : wal) {
+                                        menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                    }
+                                    text = menuEl;
+                                    map.put("message", text);
+                                    user.setPos("5");
+                                    user.setPreval2("1");
+                                    user.setMenulevel("2");
+                                    usersRepo.save(user);
+                                    map.put("command", 5);
+
+                                } else if (message.equalsIgnoreCase("2")) {
+                                    if (message.equalsIgnoreCase("1")) {
+                                        String menuEl = getValueByKey("choose_partner", labels)[1];
+                                        for (PartnerCmBk ls : prtbk) {
+                                            menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                        }
+                                        text = menuEl;
+                                        map.put("message", text);
+                                        user.setPos("5");
+                                        user.setPreval2("2");
+                                        user.setMenulevel("2");
+                                        usersRepo.save(user);
+                                        map.put("command", 5);
+                                    }
+                                }
+
+                            }else if (pv.equalsIgnoreCase("2")) {
+                                if (message.equalsIgnoreCase("1")) {
+                                    String menuEl = getValueByKey("choose_partner", labels)[1];
+                                    for (PartnerCmW ls : wal) {
+                                        menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                    }
+                                    text = menuEl;
+                                    map.put("message", text);
+                                    user.setPos("5");
+                                    user.setPreval2("1");
+                                    user.setMenulevel("2");
+                                    usersRepo.save(user);
+
+                                } else if (message.equalsIgnoreCase("2")) {
+                                    if (message.equalsIgnoreCase("1")) {
+                                        String menuEl = getValueByKey("choose_partner", labels)[1];
+                                        for (PartnerCmBk ls : prtbk) {
+                                            menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                        }
+                                        text = menuEl;
+                                        map.put("message", text);
+                                        user.setPos("5");
+                                        user.setPreval2("2");
+                                        user.setMenulevel("2");
+                                        usersRepo.save(user);
+                                    }
+                                }
+                            }else if (pv.equalsIgnoreCase("3")) {
+                                if (message.equalsIgnoreCase("1")) {
+                                    String menuEl = getValueByKey("choose_partner", labels)[1];
+                                    for (PartnerCmW ls : wal) {
+                                        menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                    }
+                                    text = menuEl;
+                                    map.put("message", text);
+                                    user.setPos("5");
+                                    user.setPreval2("1");
+                                    user.setMenulevel("2");
+                                    usersRepo.save(user);
+
+                                } else if (message.equalsIgnoreCase("2")) {
+                                    if (message.equalsIgnoreCase("1")) {
+                                        String menuEl = getValueByKey("choose_partner", labels)[1];
+                                        for (PartnerCmBk ls : prtbk) {
+                                            menuEl += "\n" + ls.getRang() + " : " + ls.getValfr();
+                                        }
+                                        text = menuEl;
+                                        map.put("message", text);
+                                        user.setPos("5");
+                                        user.setPreval2("2");
+                                        user.setMenulevel("2");
+                                        usersRepo.save(user);
+                                    }
+                                }
+                            } else if (pv.equalsIgnoreCase("4")) {
+
+                            }
+
+
+                        } else if (sl.equalsIgnoreCase("2")) {
+
+                        }
                     }
                 }
 
@@ -1422,10 +1782,10 @@ public class testussd {
     }
 
     @RequestMapping(value = "/requestpayment1", method = RequestMethod.POST)
-    public Map<String, String> requestPaiement(@RequestBody Map<String, String> payload) {
-        Map<String, Object> obj = addlistfunction(payload);
-        System.out.println(obj);
-        return ussdFirstTrustService.addListPaiement(obj);
+    public Map<String, Object> requestPaiement(@RequestBody TransactionDto payload) {
+        //Map<String, Object> obj = addlistfunction(payload);
+        System.out.println(payload);
+        return ussdFirstTrustService.addListPaiement(payload);
     }
 
     @RequestMapping(value = "/getwalletinq21", method = RequestMethod.POST)
@@ -1469,16 +1829,15 @@ public class testussd {
         return ussdFirstTrustService.CheckPin(tel, pin);
     }
 
-    @RequestMapping(value = "/getNomencTabcdAcscd1", method = RequestMethod.POST)
-    public Map<String, Object> getNomencTabcdAcscd(@RequestBody Map<String, String> payload) throws Exception {
-        System.out.println("yvo recuperation en local: getNomencTabcd");
-        System.out.println(payload);
-        return ussdFirstTrustService.getNomencTabcdAcscd(payload.get("tabcd"), payload.get("acscd"), payload.get("etab"));
+    @RequestMapping(value = "/getNomencTabcdAcscd1", method = RequestMethod.GET)
+    public ArrayList<Nomenclature> getNomencTabcdAcscd () throws Exception {
+        System.out.println("::::::::::::::::::yvo recuperation en local: getNomencTabcd :::::::::::::::");
+        return ussdFirstTrustService.getNomencTabcdAcscd();
     }
 
     @RequestMapping(value = "/changePin", method = RequestMethod.POST)
-    public Map<String, Object> changePin(@RequestBody Map<String, Object> payload) {
-      return ussdFirstTrustService.editpin(payload);
+    public Map<String, Object>  changePin(@RequestBody EditPinDto payload) {
+        return ussdFirstTrustService.editpin(payload);
     }
 
     @RequestMapping(value = "/getCli1", method = RequestMethod.POST)
@@ -1491,10 +1850,7 @@ public class testussd {
         return ussdFirstTrustService.getCpt1(telephone);
     }
 
-    /*   @RequestMapping(value = "/getNomenDataByTabcd", method = RequestMethod.POST)
-       public JSONObject getnomE (Map<String, String> payload) {
-           return ussdFirstTrustService.makeOperation(payload);
-       }*/
+
     public Map<String, Object> addlistfunction(Map<String, String> payload) {
         System.out.println("fabrication object payment" + payload);
         Map<String, Object> obj1 = ussdFirstTrustService.getCli(payload);
@@ -1512,7 +1868,7 @@ public class testussd {
         response.put("tel", payload.get("telephone"));
         response.put("telop", "");
         response.put("pin", payload.get("pin"));
-        response.put("codewaldo", "001");
+        response.put("codewaldo", payload.get("telephone"));
         response.put("codewalop", payload.get("codewalop"));
         response.put("partnerid", "");
         response.put("partnerlib", "");
@@ -1554,20 +1910,21 @@ public class testussd {
         resp.put("codewalop", payload.get("codewalop"));
         return resp;
     }
-    
-    public Map<String, String> comparator(String a, String b){
-        String s1= a;
-        String s2= b;
-        Map<String,String> res = new HashMap<>();
-        if (s1.equals(s2)){
+
+    public Map<String, String> comparator(String a, String b) {
+        String s1 = a;
+        String s2 = b;
+        Map<String, String> res = new HashMap<>();
+        if (s1.equals(s2)) {
             String result = "ok";
             res.put("message", result);
-        }else {
+        } else {
             String result = "ko";
-            res.put("message", result);  
+            res.put("message", result);
         }
         return res;
     }
+
     public String hash(String pin) {
         System.out.println("this is the pin: " + pin);
         return ussdFirstTrustService.generateHash(pin);
