@@ -16,7 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
                  <spring-cloud.version>2022.0.0</spring-cloud.version>
-                 <start-class>com.iwomi.External_api_cccNewUp.ExternalApiCccNewUpApplication</start-class>
+                 <start-class>com.iwomi.External_api_cccNewUp.ExternalApiApplication</start-class>
              <!--   <kotlin.version>1.3.72</kotlin.version>-->
 	</properties>
 	<dependencies>
