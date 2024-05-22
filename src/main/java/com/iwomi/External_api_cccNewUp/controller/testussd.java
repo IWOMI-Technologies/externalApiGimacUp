@@ -4,6 +4,7 @@ import com.iwomi.External_api_cccNewUp.model.*;
 import com.iwomi.External_api_cccNewUp.repository.*;
 import com.iwomi.External_api_cccNewUp.ussd.Dto.EditPinDto;
 import com.iwomi.External_api_cccNewUp.ussd.Dto.TransactionDto;
+import com.iwomi.External_api_cccNewUp.ussd.Enum.LibEnum;
 import com.iwomi.External_api_cccNewUp.ussd.Enum.RegionEnum;
 import com.iwomi.External_api_cccNewUp.ussd.service.UssdFirstTrustService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class testussd {
 
     @Value("${digitalbackoffice.url}")
     private String digitalUrl;
-    private static final Map<String, String> res = new HashMap<>();
+    private static final Map<String, Object> res = new HashMap<>();
     @Autowired
     UssdfirstpageRepository ussdfirstpageRepository;
     @Autowired
@@ -101,7 +102,7 @@ public class testussd {
             String member = user.getMember();
             String region = user.getRegion();
             String billnum = user.getBillnum();
-            String billref = user.getBillref();
+            String ref = user.getBillref();
             /***
              * THIS IS THE GIMAC MENU PAGE
              */
@@ -1035,7 +1036,7 @@ public class testussd {
                                     }
                                     if (pv.equalsIgnoreCase("1")) {
                                         String sdk = getValueByKey("check_info", labels)[1];
-                                        Map<String, String> resp = new HashMap<>();
+                                        Map<String, Object> resp = new HashMap<>();
                                         resp.put("telephone", num);
                                         System.out.println("::::::::::::::::: ace made the payment" + menuElements);
                                         Map<String, String> info = getwalletinqFTSL(resp);
@@ -1054,7 +1055,7 @@ public class testussd {
                                     }
                                     if (pv.equalsIgnoreCase("1")) {
                                         String sdk = getValueByKey("check_info", labels)[1];
-                                        Map<String, String> resp = new HashMap<>();
+                                        Map<String, Object> resp = new HashMap<>();
                                         resp.put("telephone", num);
                                         System.out.println(":::::::::::::ace made the payment" + menuElements);
                                         Map<String, String> info = getwalletinqFTSL(resp);
@@ -1159,14 +1160,14 @@ public class testussd {
                         if (sl.equalsIgnoreCase("1")) {
                             Map<String, Object> verif = pinverifiaction(message, max1, iter3);
                             Map<String, Object> checkipinfinal = checkPinU(msisdn, message);
-                            ArrayList<Nomenclature> nm = getNomencTabcdAcscd();
-                            for(Nomenclature ls: nm){
-
-                            }
-                            TransactionDto resp = TransactionDto.builder()
-                                    //.pin(hash(message)).amount(amt).codewalop(num).nat().member().region(RegionEnum.LOCAL).telephone(msisdn)
-                                    .build();
-
+                            Map<String, Object> resp= new HashMap<>();
+                            resp.put("telephone",msisdn);
+                            resp.put("pin",hash(message));
+                            resp.put("member",member);
+                            resp.put("codewalop",num);
+                            resp.put("amount",amt);
+                            resp.put("nat",nat);
+                            resp.put("region",RegionEnum.LOCAL);
                             Map<String, Object>  processpaymt = requestPaiement(resp);
                             System.out.println("ace made the payment" + resp);
                             if (verif.get("result").toString().equalsIgnoreCase("ok")) {
@@ -1659,7 +1660,7 @@ public class testussd {
 
     public Map<String, Object> amounttest(String amount, int max, int iter) {
         // Verification of the amount to verify
-        return testRegularExpressiontest("^\\d+(\\.\\d+)?$", amount, max, iter);
+        return testRegularExpression3("^\\d+(\\.\\d+)?$", amount, max, iter);
     }
 
     public Map<String, Object> pinverifiaction(String PIN, int max, int iter) {
@@ -1748,14 +1749,13 @@ public class testussd {
 
     }
 
-    private Map<String, Object> testRegularExpressiontest(String regex, String amount, int maxTrial, int iter) {
+    private Map<String, Object> testRegularExpression3(String regex, String amount, int maxTrial, int iter) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(amount);
         Map<String, Object> res = new HashMap<>();
 
         if (iter < maxTrial + 1) {
             if (matcher.matches()) {
-                //System.out.println("String '" + testString + "\n");
                 String result = "ok";
                 res.put("result", result);
             } else {
@@ -1774,7 +1774,7 @@ public class testussd {
 
     }
 
-    public Map<String, String> getsolde(@RequestBody Map<String, String> payload) {
+    public Map<String, String> getsolde(@RequestBody Map<String, Object> payload) {
         Map<String, Object> obj = ussdFirstTrustService.getCpt1(payload);
         Map<String, Object> obj1 = ussdFirstTrustService.getCli(payload);
         System.out.println(obj);
@@ -1782,21 +1782,20 @@ public class testussd {
     }
 
     @RequestMapping(value = "/requestpayment1", method = RequestMethod.POST)
-    public Map<String, Object> requestPaiement(@RequestBody TransactionDto payload) {
-        //Map<String, Object> obj = addlistfunction(payload);
-        System.out.println(payload);
-        return ussdFirstTrustService.addListPaiement(payload);
+    public Map<String, Object> requestPaiement(@RequestBody Map<String,Object> payload) {
+        Map<String, Object> object = ussdFirstTrustService.addListPaiement(payload);
+        return object;
     }
 
     @RequestMapping(value = "/getwalletinq21", method = RequestMethod.POST)
-    public Map<String, Object> getwalletinq2(@RequestBody Map<String, String> payload) {
-        Map<String, Object> Obj = walfunc(payload);
+    public Map<String, Object> getwalletinq2(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> Object =ussdFirstTrustService.walletinq(payload);
         System.out.println();
-        return ussdFirstTrustService.walletinq(Obj);
+        return Object;
     }
 
     @RequestMapping(value = "/getwalletinquiry1", method = RequestMethod.POST)
-    public Map<String, String> getwalletinqFTSL(@RequestBody Map<String, String> payload) {
+    public Map<String, String> getwalletinqFTSL(@RequestBody Map<String, Object> payload) {
         Map<String, Object> obj = ussdFirstTrustService.getCpt1(payload);
         Map<String, Object> obj1 = ussdFirstTrustService.getCli(payload);
         System.out.println(obj);
@@ -1805,22 +1804,32 @@ public class testussd {
 
     @RequestMapping(value = "/billInquiry1", method = RequestMethod.POST)
     public Map<String, Object> billinquiry(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> Obj = billfunc(payload);
-        System.out.println("fabrication object payment" + Obj);
-        return ussdFirstTrustService.billdetails(Obj);
+        Map<String, Object> Obj = ussdFirstTrustService.billfunc(payload);
+        Map<String, Object> Object = ussdFirstTrustService.billdetails(Obj);
+        return Object;
     }
 
     @RequestMapping(value = "/mobilereload1", method = RequestMethod.POST)
     public Map<String, Object> EtopUp(@RequestBody Map<String, Object> payload) {
-        Map<String, Object> Obj = airtimefunc(payload);
-        System.out.println("fabrication object payment" + Obj);
-        return ussdFirstTrustService.airtimereload(Obj);
+        Map<String, Object> Object = ussdFirstTrustService.airtimereload(payload);
+        return Object;
     }
 
     @RequestMapping(value = "/billpayment1", method = RequestMethod.POST)
     public Map<String, Object> paybill(@RequestBody Map<String, Object> payload) {
-        //Map<String, Object> Obj = billinquiry(payload);
-        return ussdFirstTrustService.billpayment(payload);
+        Map<String, Object> Obj = billinquiry(payload);
+        return ussdFirstTrustService.billpayment(Obj);
+    }
+
+    @RequestMapping(value = "/request_to_pay", method = RequestMethod.POST)
+    public Map<String, Object> requesttopay(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> Obj = ussdFirstTrustService.requesttopay(payload);
+        return Obj;
+    }
+    @RequestMapping(value = "/cardless_withdrawal", method = RequestMethod.POST)
+    public Map<String, Object> cardless_withdrawal(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> Obj = ussdFirstTrustService.cardless_with(payload);
+        return Obj;
     }
 
     @RequestMapping(value = "/checkPinU1", method = RequestMethod.POST)
@@ -1831,7 +1840,7 @@ public class testussd {
 
     @RequestMapping(value = "/getNomencTabcdAcscd1", method = RequestMethod.GET)
     public ArrayList<Nomenclature> getNomencTabcdAcscd () throws Exception {
-        System.out.println("::::::::::::::::::yvo recuperation en local: getNomencTabcd :::::::::::::::");
+        System.out.println(":::::::::::::::::: yvo recuperation en local: getNomencTabcd :::::::::::::::");
         return ussdFirstTrustService.getNomencTabcdAcscd();
     }
 
@@ -1841,75 +1850,16 @@ public class testussd {
     }
 
     @RequestMapping(value = "/getCli1", method = RequestMethod.POST)
-    public Map<String, Object> getcli(@RequestBody Map<String, String> telephone) {
+    public Map<String, Object> getcli(@RequestBody Map<String, Object> telephone) {
         return ussdFirstTrustService.getCli(telephone);
     }
 
     @RequestMapping(value = "/getCpt1", method = RequestMethod.POST)
-    public Map<String, Object> getcpt(@RequestBody Map<String, String> telephone) {
+    public Map<String, Object> getcpt(@RequestBody Map<String, Object> telephone) {
         return ussdFirstTrustService.getCpt1(telephone);
     }
 
 
-    public Map<String, Object> addlistfunction(Map<String, String> payload) {
-        System.out.println("fabrication object payment" + payload);
-        Map<String, Object> obj1 = ussdFirstTrustService.getCli(payload);
-        Map<String, Object> response = new HashMap<>();
-        response.put("etab", "001");
-        response.put("type", "firstrust");
-        response.put("region", payload.get("region"));
-        response.put("nat", payload.get("nat"));
-        response.put("cli", obj1.get("cli"));
-        response.put("mtrans", payload.get("amount"));
-        response.put("lib", "transfert wallet to wallet");
-        response.put("typeco", "VIRE");
-        response.put("network", "");
-        response.put("top", "VIRE");
-        response.put("tel", payload.get("telephone"));
-        response.put("telop", "");
-        response.put("pin", payload.get("pin"));
-        response.put("codewaldo", payload.get("telephone"));
-        response.put("codewalop", payload.get("codewalop"));
-        response.put("partnerid", "");
-        response.put("partnerlib", "");
-        response.put("member", payload.get("member"));
-        response.put("transtype", "RE");
-        response.put("recievercustmerdata", "");
-        response.put("vouchercode", "");
-        return response;
-    }
-
-    public Map<String, Object> billfunc(Map<String, Object> payload) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("intent", "bill_inquiry");
-        response.put("member", payload.get("member"));
-        response.put("codewaldo", payload.get("codewaldo"));
-        response.put("serviceRef", "SRV_001");
-        response.put("queryRef", "CTR_REF");
-        response.put("contractRef", payload.get("contractRef"));
-        System.out.println("fabrication de facturier" + payload.get("contractRef"));
-        return response;
-    }
-
-    public Map<String, Object> airtimefunc(Map<String, Object> payload) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("intent", "mobile_reload");
-        response.put("member", payload.get("member"));
-        response.put("rmobile", payload.get("codewaldo"));
-        response.put("smobile", payload.get("tel"));
-        response.put("amount", payload.get("amount"));
-        response.put("ref", payload.get("contractRef"));
-        System.out.println("fabrication de facturier" + payload.get("contractRef"));
-        return response;
-    }
-
-    public Map<String, Object> walfunc(Map<String, String> payload) {
-        Map<String, Object> resp = new HashMap<>();
-        resp.put("intent", "account_inquiry");
-        resp.put("member", payload.get("member"));
-        resp.put("codewalop", payload.get("codewalop"));
-        return resp;
-    }
 
     public Map<String, String> comparator(String a, String b) {
         String s1 = a;
@@ -1926,7 +1876,7 @@ public class testussd {
     }
 
     public String hash(String pin) {
-        System.out.println("this is the pin: " + pin);
+        System.out.println(":::::::: this is the pin ::::::: " + pin);
         return ussdFirstTrustService.generateHash(pin);
     }
 

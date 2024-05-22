@@ -4,5 +4,7 @@ public enum IntentEnum {
     mobile_reload,
     bill_inquiry,
     account_inquiry,
-    cardless_withdrawal
+    cardless_withdrawal,
+    merchant_purchase,
+    request_to_pay
 }

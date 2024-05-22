@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import com.iwomi.External_api_cccNewUp.ussd.Core.GlobalResponse;
 import com.iwomi.External_api_cccNewUp.ussd.Dto.EditPinDto;
 import com.iwomi.External_api_cccNewUp.ussd.Dto.TransactionDto;
+import com.iwomi.External_api_cccNewUp.ussd.Enum.LibEnum;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.aspectj.weaver.ast.Var;
@@ -74,6 +75,7 @@ public class UssdFirstTrustService {
         }
 
     }
+
     public Map<String, String> getSolde(String cli, String cpt) {
         Map<String, String> res = new HashMap<>();
         // res.put("etab", etab);
@@ -120,7 +122,7 @@ public class UssdFirstTrustService {
         //String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(payload , headers);
+        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getSolde", entity, String.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
@@ -148,9 +150,10 @@ public class UssdFirstTrustService {
         Map<String, String> res = new HashMap<>();
         String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
+        Map<String, Object> Obj = walfunc(payload);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        HttpEntity<Map> entity = new HttpEntity<Map>(Obj, headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/getwalletInquiry", entity, String.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
@@ -173,13 +176,8 @@ public class UssdFirstTrustService {
     public JSONObject getcptByTel(String telephone) {
         Map<String, String> res = new HashMap<>();
         res.put("telephone", telephone);
-        String baseUrel="http://192.168.30.59:8084/";
+        String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
-       /* Unirest.config().verifySsl(false);
-        HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
-                .header("Content-Type", "application/json")
-                .body(res)
-                .asString();*/
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map> entity = new HttpEntity<Map>(res, headers);
@@ -203,8 +201,8 @@ public class UssdFirstTrustService {
         return jsd;
     }
 
-    public Map<String, Object> getCpt1(Map<String, String> res) {
-        String baseUrel="http://192.168.30.59:8084/";
+    public Map<String, Object> getCpt1(Map<String, Object> res) {
+        String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
        /* Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
@@ -234,8 +232,8 @@ public class UssdFirstTrustService {
         return resp;
     }
 
-    public Map<String, Object> getCli(Map<String, String> res) {
-        String baseUrel="http://192.168.30.59:8084/";
+    public Map<String, Object> getCli(Map<String, Object> res) {
+        String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
        /* Unirest.config().verifySsl(false);
         HttpResponse<String> response = Unirest.post(baseUrel+"/digitalbank/getTelephone")
@@ -266,13 +264,14 @@ public class UssdFirstTrustService {
     }
 
 
-    public Map<String, Object> addListPaiement(TransactionDto payload) {
+    public Map<String, Object> addListPaiement(Map<String, Object> payload) {
         Map<String, Object> res = new HashMap<>();
         String baseUrel = "http://192.168.30.59:8084/";
         //String baseUrel = "http://localhost:8084/";
+        Map<String, Object> obj = addlistfunction(payload);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<?> entity = new HttpEntity<>(payload, headers);
+        HttpEntity<?> entity = new HttpEntity<>(obj, headers);
         RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/digitalbank/addPaiementGimac", entity, String.class);
@@ -380,75 +379,37 @@ public class UssdFirstTrustService {
         return resp;
     }
 
-   /* public JSONObject  makeOperation(Map<String, String> payload){
-        JSONObject response3 = new JSONObject();
-       String path ="http://57.128.163.118:8084/digitalbank/getNomencTabcdAcscd";
-        try {
-            Unirest.config().verifySsl(false);
-            // HttpResponse<String> response = Unirest.post(url)
-            HttpResponse<String> response = Unirest.post(path)
-                    //.header("access_token",  path)
-                    // .header("path",  path)
-                    .header("Content-Type", "application/json")
-                    .body(payload)
-                    .asString();
-            System.out.println("This is the status " + response.getStatusText());
-            System.out.println("This response: " + response.getBody());
-            if (response.getStatus() == 200) {
-                System.out.println(response.getBody());
-                JSONObject jsonObject = new JSONObject(response.getBody());
-               response3.put("data",jsonObject);
-                response3.put("status", "01");
-               // response3.put("data", response.getBody());
-            } else{
-                response3.put("status", "100");
-                response3.put("data", response.getBody());
-            }
-        } catch (HttpStatusCodeException ex) {
-            System.out.println("Response body is " + ex.getResponseBodyAsString());
-            response3.put("status", "501");
-            response3.put("data", ex.getResponseBodyAsString());
+    public JSONObject nomitems(JSONObject t) {
+        JSONObject response = new JSONObject();
+        response.put("nat", t.get("data"));
+        return response;
+    }
 
-        }
-        return response3;
-    }*/
-    public JSONObject nomitems (JSONObject t) {
-            JSONObject response = new JSONObject();
-            response.put("nat", t.get("data"));
-            return response;
-        }
-
-    public Map<String,Object>airtimereload(Map<String,Object>payload){
-        Map<String, Object> res = new HashMap<>();
-        // response.put("tel", user.getTranstel);
+    public Map<String, Object> airtimereload(Map<String, Object> payload) {
         String baseUrel = "http://192.168.30.58:8087/";
         //String baseUrel = "http://localhost:8087/";
-        System.out.println("this is the phone number : " + res);
+        Map<String, Object> Obj = airtimefunc(payload);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map> entity = new HttpEntity<Map>(payload, headers);
+        HttpEntity<Map> entity = new HttpEntity<Map>(Obj, headers);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrel + "/v1/gimacSend", entity, String.class);
         System.out.println("This is the status " + response.getStatusCodeValue());
-
         Map<String, Object> resp = new HashMap<>();
-        JSONObject jsd = new JSONObject();
-        System.out.println("body :" + response.getBody());
         response.getStatusCode();
         if (response.getStatusCodeValue() == 200) {
             System.out.println("Token :" + response.getBody());
             resp.put("status", "01");
             resp.put("cli", response.getBody());
-            // ResponseEntity<JSONObject> respon = response.getBody();
         } else {
             resp.put("status", "100");
             resp.put("data", response.getBody());
         }
         return resp;
     }
-    public Map<String, String> walletinquiryftsl (String cli, String cpt) {
+
+    public Map<String, String> walletinquiryftsl(String cli, String cpt) {
         Map<String, String> res = new HashMap<>();
-        // res.put("etab", etab);
         res.put("cli", cli);
         res.put("cpt", cpt);
         String baseUrel = "http://192.168.30.59:8084/";
@@ -483,44 +444,136 @@ public class UssdFirstTrustService {
         return response;
     }
 
-    /*public JSONObject nomitems (JSONObject T){
-        String data = T.get("data").toString();
-        JSONArray ls = new JSONArray(data);
-        JSONArray vam = new JSONArray();
-        JSONObject redo = new JSONObject();
-        for (int a = 0; a < ls.length(); a++){
-            JSONObject var = ls.getJSONObject(a);
-            String accesscode = var.getString("accesscode");
-            String mainservice = var.getString("mainservice");
-            String nat = var.getString("nat");
-            String top = var.getString("top");
-            String member = var.getString("member");
-
-            JSONObject ace = new JSONObject();
-            // ace.put("accesscode", accesscode);
-            ace.put("mainservice", mainservice);
-            ace.put("nat", nat);
-            ace.put("top", top);
-            ace.put("member", member);
-            vam.put(ace);
+    public Map<String, Object> requesttopay(Map<String, Object> payload) {
+        //String baseUrel = "http://192.168.30.58:8087/";
+        String baseUrel = "http://localhost:8084/";
+        Map<String, Object> obj1 = request_to_pay(payload);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<?> entity = new HttpEntity<>(obj1, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> response = restTemplate.postForEntity(baseUrel + "/v1/gimacSend", entity, Map.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+        Map<String, Object> resp = new HashMap<>();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
+            System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
+            return GlobalResponse.responseBuilder3("::: successful :::", "01", response.getBody());
+        } else {
+            System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
+            return GlobalResponse.responseBuilder3("::: oldpin incorrect :::", "100", null);
         }
-        redo.put("data",vam);
-        return redo;
-    }*/
+    }
+    public Map<String, Object> cardless_with (Map<String, Object> payload) {
+        //String baseUrel = "http://192.168.30.58:8087/";
+        String baseUrel = "http://localhost:8084/";
+        Map<String, Object> obj1 = cardless(payload);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<?> entity = new HttpEntity<>(obj1, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Map> response = restTemplate.postForEntity(baseUrel + "/v1/gimacSend", entity, Map.class);
+        System.out.println("This is the status " + response.getStatusCodeValue());
+        Map<String, Object> resp = new HashMap<>();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
+            System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
+            return GlobalResponse.responseBuilder3("::: successful :::", "01", response.getBody());
+        } else {
+            System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
+            return GlobalResponse.responseBuilder3("::: oldpin incorrect :::", "100", null);
+        }
+    }
 
-/*   public  ArrayList nomitems(ArrayList t) {
-        ArrayList newData = new ArrayList<>();
-        ArrayList data = t.get(1);
-        data.forEach(m -> {
-            if (Objects.equals(m.get("nat"), "TRIN")) {
-                m.remove("mainservice");
-                newData.add(m);
-            }
-        });
-        return newData;
-    }*/
 
-    public Map<String, Object>  editpin(EditPinDto payload){
+    public Map<String, Object> addlistfunction(Map<String, Object> payload) {
+        System.out.println(":::::::::: fabrication object payment ::::::::" + payload);
+        Map<String, Object> obj1 = getCli(payload);
+        Map<String, Object> response = new HashMap<>();
+        response.put("etab", "001");
+        response.put("type", "firstrust");
+        response.put("region", payload.get("region"));
+        response.put("nat", payload.get("nat"));
+        response.put("cli", obj1.get("cli"));
+        response.put("mtrans", payload.get("amount"));
+        response.put("lib", LibEnum.WALLET_TO_WALLET);
+        response.put("typeco", "VIRE");
+        response.put("network", "");
+        response.put("top", "VIRE");
+        response.put("tel", payload.get("telephone"));
+        response.put("telop", "");
+        response.put("pin", payload.get("pin"));
+        response.put("codewaldo", payload.get("telephone"));
+        response.put("codewalop", payload.get("codewalop"));
+        response.put("partnerid", "");
+        response.put("partnerlib", "");
+        response.put("member", payload.get("member"));
+        response.put("transtype", "RE");
+        response.put("recievercustmerdata", "");
+        response.put("vouchercode", "");
+        return response;
+    }
+
+    public Map<String, Object> billfunc(Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("intent", "bill_inquiry");
+        response.put("member", payload.get("member"));
+        response.put("codewaldo", payload.get("codewaldo"));
+        response.put("serviceRef", "SRV_001");
+        response.put("queryRef", "CTR_REF");
+        response.put("contractRef", payload.get("contractRef"));
+        System.out.println(":::::::: fabrication de facturier :::::::::" + payload.get("contractRef"));
+        return response;
+    }
+
+    public Map<String, Object> airtimefunc(Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("intent", "mobile_reload");
+        response.put("member", payload.get("member"));
+        response.put("rmobile", payload.get("codewaldo"));
+        response.put("smobile", payload.get("tel"));
+        response.put("amount", payload.get("amount"));
+        response.put("ref", payload.get("contractRef"));
+        System.out.println(":::::::: fabrication de facturier :::::::::" + payload.get("contractRef"));
+        return response;
+    }
+
+    public Map<String, Object> walfunc(Map<String, Object> payload) {
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("intent", "account_inquiry");
+        resp.put("member", payload.get("member"));
+        resp.put("codewalop", payload.get("codewalop"));
+        return resp;
+    }
+
+    public Map<String, Object> request_to_pay(Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("intent", "account_inquiry");
+        response.put("ref", payload.get("ref"));
+        response.put("wdes", payload.get("codewalop"));
+        response.put("wsou", payload.get("tel"));
+        response.put("amount", payload.get("amount"));
+        response.put("member", payload.get("member"));
+        response.put("currency", "950");
+        response.put("purchaseref", "ctr1235");
+        response.put("createtime", "");
+        return response;
+    }
+    public Map<String, Object> cardless (Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("intent", "cardless_withdrawal");
+        response.put("ref", payload.get("ref"));
+        response.put("rmobile", payload.get("codewalop"));
+        response.put("smobile", payload.get("tel"));
+        response.put("amount", payload.get("amount"));
+        response.put("member", payload.get("member"));
+        response.put("currency", "950");
+        response.put("validitytime", "");
+        response.put("createtime", "");
+        return response;
+    }
+
+    public Map<String, Object> editpin(EditPinDto payload) {
         //String baseUrel = "http://192.168.30.59:8084/";
         String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
@@ -533,7 +586,7 @@ public class UssdFirstTrustService {
         if (response.getStatusCode() == HttpStatus.OK) {
             System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
             System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
-            return GlobalResponse.responseBuilder3("::: successful :::","01", response.getBody());
+            return GlobalResponse.responseBuilder3("::: successful :::", "01", response.getBody());
         } else {
             System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
             return GlobalResponse.responseBuilder3("::: oldpin incorrect :::", "100", null);
@@ -565,8 +618,9 @@ public class UssdFirstTrustService {
         }
         return sb.toString();
     }
-    public ArrayList<Nomenclature>  getNomencTabcdAcscd() {
-       // String baseUrel = "http://192.168.30.59:8084/";
+
+    public ArrayList<Nomenclature> getNomencTabcdAcscd() {
+        // String baseUrel = "http://192.168.30.59:8084/";
         String baseUrel = "http://localhost:8084/";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -575,10 +629,10 @@ public class UssdFirstTrustService {
         if (response.getStatusCode() == HttpStatus.OK) {
             System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
             System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + response.getBody().getClass());
-            return GlobalResponse.responseBuilder4("::: successful :::","01", response.getBody());
+            return GlobalResponse.responseBuilder4("::: successful :::", "01", response.getBody());
         } else {
             System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
-            return GlobalResponse.responseBuilder4("::: unsuccessful :::","100", null);
+            return GlobalResponse.responseBuilder4("::: unsuccessful :::", "100", null);
         }
     }
 
@@ -593,13 +647,6 @@ public class UssdFirstTrustService {
         return response1;
     }
 
-/* if (entity.getStatusCode() == HttpStatus.OK) {
-        System.out.println("::::::::::::::: response.getBody() :::::::::::::::" + response.getBody());
-        System.out.println("::::::::::::::: response.getBody() Class :::::::::::::::" + entity.getBody().getClass());
-        return GlobalResponse.responseBuilder("::: successful :::", HttpStatus.CREATED,"01", entity.getBody());
-    } else {
-        System.out.println("::::::::::::::: Request failed with status code ::::::::::: " + response.getStatusCodeValue());
-        return GlobalResponse.responseBuilder("::: unsuccessful :::", HttpStatus.BAD_REQUEST,"100", null);
-    }*/
+
 }
 
