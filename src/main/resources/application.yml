@@ -1,25 +1,25 @@
-## YAML Template.
-## YAML Template.
-eureka:
-  instance:
-    leaseRenewalIntervalInSeconds: 1
-    leaseExpirationDurationInSeconds: 2
-    preferIpAddress: true
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone:  http://192.168.30.58:8761/eureka/
-    healthcheck:
-      enabled: true
-    lease:
-      duration: 5
-    
-
-spring:
-  application:
-    name: external-api
-
-#logging:
-#  level:    http://192.168.30.58:8761/eureka/
-#    com.example.howtodoinjava: DEBUG
+### YAML Template.
+### YAML Template.
+#eureka:
+#  instance:
+#    leaseRenewalIntervalInSeconds: 1
+#    leaseExpirationDurationInSeconds: 2
+#    preferIpAddress: true
+#  client:
+#    registerWithEureka: true
+#    fetchRegistry: true
+#    serviceUrl:
+#      defaultZone:  http://192.168.30.58:8761/eureka/
+#    healthcheck:
+#      enabled: false
+#    lease:
+#      duration: 5
+#
+#
+#spring:
+#  application:
+#    name: external-api
+#
+##logging:
+##  level:    http://192.168.30.58:8761/eureka/
+##    com.example.howtodoinjava: DEBUG
