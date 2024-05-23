@@ -12,19 +12,19 @@ import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * @author user
  */
-@Data
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Setter
+@Getter
+@ToString
 @Table(name = "ussdsession")
 public class UserSession implements Serializable {
     @Id

@@ -38,16 +38,18 @@ public class UssdController {
 
         var session = sessionService.getSessionByPhoneAndSsid(payload.msisdn, payload.sessionid);
 
-        log.info(":::::::::::: SESSION NOT PRESENT. CREATING NEW SESSION :::::::::::: ");
         if (session == null) {
+            log.info(":::::::::::: SESSION NOT PRESENT. CREATING NEW SESSION :::::::::::: ");
             var res = ussdService.createSessionAndReturnHomeMenu(payload);
             return ResponseEntity.status(HttpStatus.OK).body(res.toString());
         }
 
-        log.info(":::::::::::: SESSION PRESENT. User Picked Bottom MENU :::::::::::: ");
+        log.info(":::::::::::: SESSION PRESENT :::::::::::: " + session);
+        log.info(":::::::::::: CURRENT LEVEL :::::::::::: " + session.getPos());
+
         if (!session.getPos().equalsIgnoreCase(Menu.StartLevel)) {
             if (payload.message.equalsIgnoreCase(Menu.HomeMenu)) {
-                log.info(":::::::::::: Using Home Menu :::::::::::: ");
+                log.info(":::::::::::: User Chooses Home Menu :::::::::::: ");
 
                 session.setPos(Menu.StartLevel);
                 sessionService.saveSession(session);
@@ -57,6 +59,8 @@ public class UssdController {
             }
 
             if (payload.message.equalsIgnoreCase(Menu.PrevMenu)) {
+                log.info(":::::::::::: User Chooses prev Menu :::::::::::: ");
+                
                 var pair = ussdService.goPrevMenu(session.getPos());
 
                 session.setPos(pair.get1st());
@@ -66,7 +70,6 @@ public class UssdController {
             }
         }
 
-        log.info(":::::::::::: SESSION PRESENT. GETTING NEXT MENU :::::::::::: ");
         var pair = ussdService.goToUserChooseMenu(session.getPos(), payload.message);
 
         session.setPos(pair.get1st());

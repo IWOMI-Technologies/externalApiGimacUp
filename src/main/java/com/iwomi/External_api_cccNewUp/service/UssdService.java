@@ -21,7 +21,6 @@ public class UssdService {
     UserSessionRepo sessionRepo;
     @Autowired
     NomenclatureRepository nomenclatureRepo;
-
     private static final Log log = LogFactory.getLog(UssdService.class);
 
     public HashMap<String, Object> createSessionAndReturnHomeMenu(UssdPayloadDTO payload) {
@@ -37,7 +36,7 @@ public class UssdService {
                 .iterator(1)
                 .provider(payload.provider)
                 .lang("1")
-                .pos("000000")
+                .pos(Menu.StartLevel)
                 .build();
 
         var bdSession = sessionRepo.save(newSession);
@@ -59,7 +58,9 @@ public class UssdService {
     public String constructMenuFromNomens(List<Nomenclature> nomenclatures) {
         var text = "";
 
-        for (int i = -0; i < nomenclatures.size(); i++) {
+        if (nomenclatures.isEmpty()) return "Oops";
+
+        for (int i = 0; i < nomenclatures.size(); i++) {
             var label = nomenclatures.get(i).getLib1();
             text = i == 0 ? text + label : text + "\n" + label;
         }
@@ -73,13 +74,13 @@ public class UssdService {
 
 
     public Pair<String, HashMap<String, Object>> goPrevMenu(String currentLevel) {
-        log.info(":::::::::::: Using Prev Menu :::::::::::: ");
-
         var currentMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, currentLevel);
 
         log.info(":::::::::::: currentMenus :::::::::::: " + currentMenus);
 
         if (currentMenus == null || currentMenus.isEmpty()) {
+            log.info(":::::::::::: NO MENU FOUND :::::::::::: ");
+
             var response = new HashMap<String, Object>();
             response.put("message", "Picked Menu Not Found.");
             response.put("command", 1);
@@ -106,7 +107,6 @@ public class UssdService {
 
         var nextMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, pickedMenu.getLib5());
 
-        log.info(":::::::::::: Current Session Level :::::::::::: " + currentLevel);
         log.info(":::::::::::: NEXT MENU :::::::::::: " + nextMenus);
 
         response.put("message", constructMenuFromNomens(nextMenus));

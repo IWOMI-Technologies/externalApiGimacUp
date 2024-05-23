@@ -17,12 +17,12 @@ public interface NomenclatureRepository extends JpaRepository<Nomenclature, Long
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3 ORDER BY acscd ASC", nativeQuery = true)
     Nomenclature findTabcdAndAcsd(String string, String access_code_patner, String string0);
 
-    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib3 = ?2 order by lib7 ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib3 = ?2 and e.dele=0 order by lib7 ASC", nativeQuery = true)
     List<Nomenclature> getHomePageMenu(String string, String lib3);
 
-    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 and e.lib7 = ?3 ORDER BY lib7 ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 and e.lib7 = ?3 and e.dele=0 ORDER BY lib7 ASC", nativeQuery = true)
     Nomenclature findTabcdAndLevelAndRang(String tabcd, String lib8, String lib7);
-    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 ORDER BY lib7 ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 and e.dele=0 ORDER BY lib7 ASC", nativeQuery = true)
     List<Nomenclature> findTabcdAndLevel(String tabcd, String lib8);
 
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3 and e.cetab=?4 ORDER BY acscd ASC", nativeQuery = true)
