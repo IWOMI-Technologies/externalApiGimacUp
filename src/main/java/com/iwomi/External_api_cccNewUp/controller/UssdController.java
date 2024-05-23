@@ -1,10 +1,13 @@
 package com.iwomi.External_api_cccNewUp.controller;
 
+import com.iwomi.External_api_cccNewUp.Core.constants.Menu;
 import com.iwomi.External_api_cccNewUp.Dto.UssdPayloadDTO;
 import com.iwomi.External_api_cccNewUp.repo.NomenclatureRepository;
-import com.iwomi.External_api_cccNewUp.repo.UserSessionRepo;
+import com.iwomi.External_api_cccNewUp.service.SessionService;
 import com.iwomi.External_api_cccNewUp.service.UssdService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,54 +17,61 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-
 @RestController
 @RequestMapping("${apiPrefix}")
 @Component
 @RequiredArgsConstructor
 
 public class UssdController {
-    @Autowired
-    UserSessionRepo sessionRepo;
+    private static final Log log = LogFactory.getLog(UssdController.class);
     @Autowired
     UssdService ussdService;
+
+    @Autowired
+    final SessionService sessionService;
     @Autowired
     NomenclatureRepository nomenclatureRepo;
 
-    final String tabcd = "9090";
-
     @RequestMapping(value = "/endpoint", method = RequestMethod.POST)
     ResponseEntity<?> endpoint(@RequestBody UssdPayloadDTO payload) throws Exception {
-        var response = new HashMap<>();
+        log.info(":::::::::::: Payload :::::::::::: " + payload);
 
-        var session = sessionRepo.findClientByPhoneAndUuid(payload.msisdn, payload.sessionid);
+        var session = sessionService.getSessionByPhoneAndSsid(payload.msisdn, payload.sessionid);
 
+        log.info(":::::::::::: SESSION NOT PRESENT. CREATING NEW SESSION :::::::::::: ");
         if (session == null) {
             var res = ussdService.createSessionAndReturnHomeMenu(payload);
             return ResponseEntity.status(HttpStatus.OK).body(res.toString());
         }
 
-        var prevMenu = nomenclatureRepo.findTabcdAndLevelAndRang(tabcd, session.getPos(), payload.message);
+        log.info(":::::::::::: SESSION PRESENT. User Picked Bottom MENU :::::::::::: ");
+        if (!session.getPos().equalsIgnoreCase(Menu.StartLevel)) {
+            if (payload.message.equalsIgnoreCase(Menu.HomeMenu)) {
+                log.info(":::::::::::: Using Home Menu :::::::::::: ");
 
-        System.out.println(":::::::::::: SESSION PRESENT. GETTING NEXT MENU :::::::::::: ");
+                session.setPos(Menu.StartLevel);
+                sessionService.saveSession(session);
 
-        if (prevMenu == null) {
-            response.put("message", "Error");
-            response.put("command", 1);
-            return ResponseEntity.status(HttpStatus.OK).body(response.toString());
+                var res = ussdService.getMenuItems(Menu.StartLevel);
+                return ResponseEntity.status(HttpStatus.OK).body(res.toString());
+            }
+
+            if (payload.message.equalsIgnoreCase(Menu.PrevMenu)) {
+                var pair = ussdService.goPrevMenu(session.getPos());
+
+                session.setPos(pair.get1st());
+                sessionService.saveSession(session);
+
+                return ResponseEntity.status(HttpStatus.OK).body(pair.get2nd().toString());
+            }
         }
 
-        var nextMenus = nomenclatureRepo.findTabcdAndLevel(tabcd, prevMenu.getLib5());
+        log.info(":::::::::::: SESSION PRESENT. GETTING NEXT MENU :::::::::::: ");
+        var pair = ussdService.goToUserChooseMenu(session.getPos(), payload.message);
 
-        System.out.println(":::::::::::: NEXT MENU :::::::::::: " + nextMenus);
+        session.setPos(pair.get1st());
+        sessionService.saveSession(session);
 
-        session.setPos(prevMenu.getLib5());
-        sessionRepo.save(session);
-
-        response.put("message", ussdService.constructMenuFromNomens(nextMenus));
-        response.put("command", 1);
-
-        return ResponseEntity.status(HttpStatus.OK).body(response.toString());
+        return ResponseEntity.status(HttpStatus.OK).body(pair.get2nd().toString());
     }
 }
