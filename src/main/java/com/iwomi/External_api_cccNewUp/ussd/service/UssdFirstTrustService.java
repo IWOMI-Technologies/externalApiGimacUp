@@ -483,43 +483,6 @@ public class UssdFirstTrustService {
         return response;
     }
 
-    /*public JSONObject nomitems (JSONObject T){
-        String data = T.get("data").toString();
-        JSONArray ls = new JSONArray(data);
-        JSONArray vam = new JSONArray();
-        JSONObject redo = new JSONObject();
-        for (int a = 0; a < ls.length(); a++){
-            JSONObject var = ls.getJSONObject(a);
-            String accesscode = var.getString("accesscode");
-            String mainservice = var.getString("mainservice");
-            String nat = var.getString("nat");
-            String top = var.getString("top");
-            String member = var.getString("member");
-
-            JSONObject ace = new JSONObject();
-            // ace.put("accesscode", accesscode);
-            ace.put("mainservice", mainservice);
-            ace.put("nat", nat);
-            ace.put("top", top);
-            ace.put("member", member);
-            vam.put(ace);
-        }
-        redo.put("data",vam);
-        return redo;
-    }*/
-
-/*   public  ArrayList nomitems(ArrayList t) {
-        ArrayList newData = new ArrayList<>();
-        ArrayList data = t.get(1);
-        data.forEach(m -> {
-            if (Objects.equals(m.get("nat"), "TRIN")) {
-                m.remove("mainservice");
-                newData.add(m);
-            }
-        });
-        return newData;
-    }*/
-
     public Map<String, Object>  editpin(EditPinDto payload){
         //String baseUrel = "http://192.168.30.59:8084/";
         String baseUrel = "http://localhost:8084/";
