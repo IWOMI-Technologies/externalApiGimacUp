@@ -14,7 +14,7 @@ public class SessionService {
         return sessionRepo.findClientByPhoneAndUuid(phone, sessionId);
     }
 
-    public UserSession saveSession(UserSession session) {
-        return sessionRepo.save(session);
+    public void saveSession(UserSession session) {
+        sessionRepo.save(session);
     }
 }
