@@ -1,6 +1,10 @@
 package com.iwomi.External_api_cccNewUp.service;
 
+import com.google.gson.Gson;
+import com.iwomi.External_api_cccNewUp.Core.constants.AppString;
 import com.iwomi.External_api_cccNewUp.Core.constants.Menu;
+import com.iwomi.External_api_cccNewUp.Core.constants.NomenclatureTables;
+import com.iwomi.External_api_cccNewUp.Dto.TransferInfo;
 import com.iwomi.External_api_cccNewUp.Dto.UssdPayloadDTO;
 import com.iwomi.External_api_cccNewUp.Entities.Nomenclature;
 import com.iwomi.External_api_cccNewUp.Entities.UserSession;
@@ -11,8 +15,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UssdService {
@@ -20,25 +26,33 @@ public class UssdService {
     UserSessionRepo sessionRepo;
     @Autowired
     NomenclatureRepository nomenclatureRepo;
+
+    @Autowired
+    ApiClient apiClient;
+
     private static final Log log = LogFactory.getLog(UssdService.class);
+
+    final Gson gson = new Gson();
 
     public HashMap<String, Object> createSessionAndReturnHomeMenu(UssdPayloadDTO payload) {
         var response = new HashMap<String, Object>();
 
+        log.info(":::::::::::: SESSION NOT PRESENT. CREATING NEW SESSION :::::::::::: ");
+
         UserSession newSession = UserSession.builder()
                 .menuLevel("0").uuid(payload.sessionid)
                 .phone(payload.msisdn)
-                .max(3).provider(payload.provider)
+                .max(3)
+                .provider(payload.provider)
                 .language("en")
                 .pos(Menu.StartLevel)
                 .build();
 
         var bdSession = sessionRepo.save(newSession);
-        System.out.println(":::::::::::: Session Saved in BD :::::::::::: " + bdSession);
+        log.info(":::::::::::: Session Saved in BD :::::::::::: " + bdSession);
 
         var nomenclatures = nomenclatureRepo.getHomePageMenu("9090", "1");
-
-        System.out.println(":::::::::::: Home Page Menus :::::::::::: " + nomenclatures);
+        log.info(":::::::::::: Home Page Menus :::::::::::: " + nomenclatures);
 
         if (nomenclatures.isEmpty()) {
             response.put("message", "Contact Admin.");
@@ -46,7 +60,7 @@ public class UssdService {
             return response;
         }
 
-        response.put("message", constructMenuFromNomens(nomenclatures));
+        response.put("message", constructMenuFromNomens(nomenclatures, "", ""));
         response.put("command", 1);
 
         return response;
@@ -76,47 +90,149 @@ public class UssdService {
     }
 
     public HashMap<String, Object> goToUserChooseMenu(String currentLevel, String userInput, UserSession session) {
-        var menus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, session.getPos());
-        Nomenclature prevMenu;
+        List<Nomenclature> currentMenus; // Menu Gotten from the last position stored in the session.
+        Nomenclature userPickedMenu; // Previous menu form [currentMenus] gotten from the lib6 of [currentMenus].
+        List<Nomenclature> pickedMenuContent; // Next menu form [userPickedMenu] gotten from the lib5 of [userPickedMenu].
 
-        if (menus != null && menus.size() == 1) {
-            prevMenu = menus.get(0);
+        currentMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, session.getPos());
+
+        if (currentMenus != null && currentMenus.size() == 1) {
+            // In case we have only a single menu, we get the only menu.
+            userPickedMenu = currentMenus.get(0);
         } else {
-            prevMenu = nomenclatureRepo.findTabcdAndLevelAndRang(Menu.Tabcd, currentLevel, userInput);
+            // We get the menu based on user input
+            userPickedMenu = nomenclatureRepo.findTabcdAndLevelAndRang(Menu.Tabcd, currentLevel, userInput);
         }
 
-        if (prevMenu == null) throw new IllegalArgumentException("Picked Menu Not Found.");
+        if (userPickedMenu == null) throw new IllegalArgumentException("Picked Menu Not Found.");
 
-        var nextMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, prevMenu.getLib5());
+        pickedMenuContent = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, userPickedMenu.getLib5());
 
-        log.info("::::::::: CURRENT MENU ::::::::::::" + prevMenu);
-        log.info(":::::::::::: NEXT MENU :::::::::::: " + nextMenus);
+        session.setPos(userPickedMenu.getLib5());// Set the current user position
 
-        var type = prevMenu.getLib9();
+        log.info("::::::::: CURRENT MENU ::::::::::::" + userPickedMenu);
+        log.info(":::::::::::: NEXT MENU :::::::::::: " + pickedMenuContent);
 
-        if (type != null && !type.isEmpty()) {
-            switch (type) {
-                case "WALLET":
+        var prefixText = "";
+        var additionalTxt = "";
+
+        var store = userPickedMenu.getLib9();
+        if (store != null && !store.isEmpty()) {
+            switch (store) {
+                case AppString.WALLET:
                     session.setWallet(userInput);
                     break;
-                case "REFERENCE":
+                case AppString.TYPE:
+                    session.setNat(userInput);
+                    break;
+                case AppString.ACCOUNT:
+                    session.setAcc(userInput);
+                    break;
+                case AppString.REFERENCE:
+                    prefixText = getTransferDetail(session.amount, session.wallet);
                     session.setRef(userInput);
                     break;
-                case "PIN":
+                case AppString.AMOUNT:
+                    session.setAmount(userInput);
+                    break;
+                case AppString.MEMBER:
+                    var index = Integer.parseInt(userInput);
+                    var operator = getOperatorByCountryCode(session.getCountry(), index);
+                    session.setMember(operator.getLib2());
+                    break;
+                case AppString.PIN:
                     session.setPin(userInput);
                     break;
             }
         }
 
-        session.setPos(prevMenu.getLib5());
-        sessionRepo.save(session);
+        String output = "";
+
+        if (pickedMenuContent.size() == 1) {
+            output = pickedMenuContent.get(0).getLib10();
+        }
+
+        if (output != null && !output.isEmpty()) {
+            additionalTxt = switch (output) {
+                case AppString.CTRY -> {
+                    var countries = getCountries().stream().map(Nomenclature::getLib2).toList();
+                    yield formatEntries(countries);
+                }
+                case AppString.OPE -> {
+                    var countries = getCountries();
+                    var index = Integer.parseInt(userInput);
+                    log.info(":::::::::::: countries :::::::::::: " + countries);
+                    log.info(":::::::::::: index :::::::::::: " + index);
+                    session.setCountry(countries.get(index - 1).getLib1());
+                    yield formatEntries(getOperatorsByIndex(index, countries));
+                }
+                default -> additionalTxt;
+            };
+        }
 
         var response = new HashMap<String, Object>();
-
-        response.put("message", constructMenuFromNomens(nextMenus));
+        response.put("message", constructMenuFromNomens(pickedMenuContent, additionalTxt, prefixText));
         response.put("command", 1);
 
+        sessionRepo.save(session);
+
         return response;
+    }
+
+    public List<Nomenclature> getCountries() {
+        var nomen = nomenclatureRepo.findTabcdAndDel(NomenclatureTables.CountriesTabcd, "0");
+
+        if (nomen == null || nomen.isEmpty()) return new ArrayList<>();
+
+        var countries = nomen.stream().filter((e) -> !Objects.equals(e.getLib3(), "1")).toList();
+
+        log.info(":::::::::::: Countries :::::::::::: " + countries);
+
+        return countries;
+    }
+
+    public List<String> getOperatorsByIndex(int index, List<Nomenclature> countries) {
+        var country = countries.get(index - 1);
+
+        var operators = nomenclatureRepo.findTabcdAndDel(NomenclatureTables.OperatorTabcd, "0");
+
+        if (operators == null || operators.isEmpty()) return new ArrayList<>();
+
+        var operatorsAsString = operators.stream().filter((e) -> Objects.equals(e.getLib1(), country.getLib1()))
+                .map(Nomenclature::getLib2).toList();
+
+        log.info(":::::::::::: operatorsAsString :::::::::::: " + operatorsAsString);
+
+        return operatorsAsString;
+    }
+
+    public Nomenclature getOperatorByCountryCode(String code, int index) {
+        var operators = nomenclatureRepo.findTabcdAndLib1AndDel(NomenclatureTables.OperatorTabcd, code, "0");
+
+        if (operators == null || operators.isEmpty()) return null;
+
+        var operator = operators.get(index - 1);
+
+        log.info(":::::::::::: operator :::::::::::: " + operator);
+
+        return operator;
+    }
+
+    public String formatEntries(List<String> list) {
+        var additionalTxt = "";
+
+        for (int i = 0; i < list.size(); i++) {
+            var label = list.get(i);
+            var pos = (i + 1) + ". ";
+
+            if (i == 0) {
+                additionalTxt = additionalTxt + pos + label;
+            } else {
+                additionalTxt = additionalTxt + "\n" + pos + label;
+            }
+        }
+
+        return additionalTxt;
     }
 
     public HashMap<String, Object> returnNoMenuFound(String message) {
@@ -134,13 +250,13 @@ public class UssdService {
 
         log.info(":::::::::::: NEXT MENU :::::::::::: " + nextMenus);
 
-        response.put("message", constructMenuFromNomens(nextMenus));
+        response.put("message", constructMenuFromNomens(nextMenus, "", ""));
         response.put("command", 1);
 
         return response;
     }
 
-    public String constructMenuFromNomens(List<Nomenclature> nomenclatures) {
+    public String constructMenuFromNomens(List<Nomenclature> nomenclatures, String additionalText, String prefixText) {
         if (nomenclatures.isEmpty()) return "Couldn't get next menus";
 
         var text = "";
@@ -152,6 +268,52 @@ public class UssdService {
 
         if (nomenclatures.get(0).getLib8().equalsIgnoreCase(Menu.StartLevel)) return text;
 
-        return text + "\n------\n" + Menu.PrevMenu + ". Previous\n" + Menu.HomeMenu + ". Home";
+        return prefixText + "\n" + text + additionalText + "\n------\n" + Menu.PrevMenu + ". Previous\n" + Menu.HomeMenu + ". Home";
+    }
+
+    public String constructMenuFromText(String message, String additionalText) {
+        return message + additionalText + "\n------\n" + Menu.PrevMenu + ". Previous\n" + Menu.HomeMenu + ". Home";
+    }
+
+    public Boolean isBankWallet(String wallet) {
+        try {
+            var query = new HashMap<String, Object>();
+            query.put("wallet", wallet);
+            var result = apiClient.get("/exists-wallet", query, Boolean.class);
+
+            return result.getStatus() == 200;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public String getTransferDetail(String amount, String wallet) {
+        var body = new HashMap<String, Object>();
+
+        body.put("wallet", wallet);
+        body.put("amount", amount);
+
+        var result = apiClient.post("/transferDetail", new HashMap<String, Object>(), body);
+
+        System.out.println("::::::::: RESULT  :::::::::::: " + result);
+
+        if (result.getStatus() == 200) {
+            var info = gson.fromJson(result.getBody().toString(), TransferInfo.class);
+            System.out.println("::::::::: info  :::::::::::: " + info);
+
+            var str = "";
+
+            if (info.can) {
+                str = "You are about to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
+            } else {
+                str = info.reason + " to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
+            }
+            System.out.println("::: STR :::" + str);
+
+            return str;
+        } else {
+            return "";
+        }
     }
 }

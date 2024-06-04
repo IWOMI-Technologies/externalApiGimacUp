@@ -22,6 +22,7 @@ public interface NomenclatureRepository extends JpaRepository<Nomenclature, Long
 
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 and e.lib7 = ?3 and e.dele=0 ORDER BY lib7 ASC", nativeQuery = true)
     Nomenclature findTabcdAndLevelAndRang(String tabcd, String lib8, String lib7);
+
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib8 = ?2 and e.dele=0 ORDER BY lib7 ASC", nativeQuery = true)
     List<Nomenclature> findTabcdAndLevel(String tabcd, String lib8);
 
@@ -30,6 +31,9 @@ public interface NomenclatureRepository extends JpaRepository<Nomenclature, Long
 
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.dele=?2  ORDER BY tabcd ASC", nativeQuery = true)
     List<Nomenclature> findTabcdAndDel(String string, String string0);
+
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib1=?2 and e.dele=?3  ORDER BY tabcd ASC", nativeQuery = true)
+    List<Nomenclature> findTabcdAndLib1AndDel(String string, String lib1, String del);
 
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.dele=?2 and e.cetab=?3 ORDER BY tabcd ASC", nativeQuery = true)
     List<Nomenclature> findTabcdAndDel1(String string, String string0, String etab);
@@ -46,8 +50,8 @@ public interface NomenclatureRepository extends JpaRepository<Nomenclature, Long
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd ='0012' and dele=0 and e.cetab=?1 ORDER BY acscd ASC", nativeQuery = true)
     List<Nomenclature> findInNomenclature(String etab);
 
-    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3 ", nativeQuery = true)
-    Nomenclature findUrl1(String tabcd, String acscd, String dele);
+    @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.acscd=?2 and e.dele=?3 and e.cetab=?4", nativeQuery = true)
+    public Nomenclature findUrl1(String tabcd, String acscd, String dele, String etab);
 
     @Query(value = "SELECT * FROM sanm e WHERE e.tabcd = ?1 and e.lib3=?2 or e.lib3=?3 and e.nfac=?4 and e.cetab=?5 ORDER BY acscd ASC", nativeQuery = true)
     List<Nomenclature> findAction(String tabcd, String lib3, String lib31, String nfac, String etab);
