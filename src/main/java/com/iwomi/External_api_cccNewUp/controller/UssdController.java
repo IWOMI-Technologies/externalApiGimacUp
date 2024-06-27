@@ -80,6 +80,8 @@ public class UssdController {
                 return ResponseEntity.status(HttpStatus.OK).body(res.toString());
             }
 
+            log.info(":::::::::::: SESSION PRESENT. :::::::::::: " + session);
+
             var res = ussdService.goToUserChooseMenu(session.getPos(), payload.message, session);
 
             return ResponseEntity.status(HttpStatus.OK).body(res.toString());

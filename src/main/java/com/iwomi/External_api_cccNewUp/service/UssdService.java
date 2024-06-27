@@ -26,13 +26,10 @@ public class UssdService {
     UserSessionRepo sessionRepo;
     @Autowired
     NomenclatureRepository nomenclatureRepo;
-
     @Autowired
     ApiClient apiClient;
-
-    private static final Log log = LogFactory.getLog(UssdService.class);
-
-    final Gson gson = new Gson();
+    private final Log log = LogFactory.getLog(UssdService.class);
+    private final Gson gson = new Gson();
 
     public HashMap<String, Object> createSessionAndReturnHomeMenu(UssdPayloadDTO payload) {
         var response = new HashMap<String, Object>();
@@ -66,29 +63,6 @@ public class UssdService {
         return response;
     }
 
-    public HashMap<String, Object> goPrevMenu(String currentLevel, UserSession session) {
-        var currentMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, currentLevel);
-
-        log.info(":::::::::::: currentMenus :::::::::::: " + currentMenus);
-
-        if (currentMenus == null || currentMenus.isEmpty()) {
-            log.info(":::::::::::: NO MENU FOUND :::::::::::: ");
-
-            var response = new HashMap<String, Object>();
-            response.put("message", "Picked Menu Not Found.");
-            response.put("command", 1);
-            return response;
-        }
-
-        var prevLevel = currentMenus.get(0).getLib6();
-        var res = getMenuItems(prevLevel);
-
-        session.setPos(currentMenus.get(0).getLib6());
-        sessionRepo.save(session);
-
-        return res;
-    }
-
     public HashMap<String, Object> goToUserChooseMenu(String currentLevel, String userInput, UserSession session) {
         List<Nomenclature> currentMenus; // Menu Gotten from the last position stored in the session.
         Nomenclature userPickedMenu; // Previous menu form [currentMenus] gotten from the lib6 of [currentMenus].
@@ -111,12 +85,18 @@ public class UssdService {
         session.setPos(userPickedMenu.getLib5());// Set the current user position
 
         log.info("::::::::: CURRENT MENU ::::::::::::" + userPickedMenu);
-        log.info(":::::::::::: NEXT MENU :::::::::::: " + pickedMenuContent);
+        log.info("::::::::: NEXT MENU :::::::::::: " + pickedMenuContent);
 
         var prefixText = "";
         var additionalTxt = "";
 
+        var output = "";
         var store = userPickedMenu.getLib9();
+
+        if (pickedMenuContent.size() == 1) {
+            output = pickedMenuContent.get(0).getLib10();
+        }
+
         if (store != null && !store.isEmpty()) {
             switch (store) {
                 case AppString.WALLET:
@@ -128,10 +108,6 @@ public class UssdService {
                 case AppString.ACCOUNT:
                     session.setAcc(userInput);
                     break;
-                case AppString.REFERENCE:
-                    prefixText = getTransferDetail(session.amount, session.wallet);
-                    session.setRef(userInput);
-                    break;
                 case AppString.AMOUNT:
                     session.setAmount(userInput);
                     break;
@@ -140,16 +116,15 @@ public class UssdService {
                     var operator = getOperatorByCountryCode(session.getCountry(), index);
                     session.setMember(operator.getLib2());
                     break;
+                case AppString.REFERENCE:
+                    var info = getTransferDetail(session.amount, session.wallet);
+                    prefixText = constructMessage(info, session.amount, session.wallet);
+                    session.setRef(userInput);
+                    break;
                 case AppString.PIN:
                     session.setPin(userInput);
                     break;
             }
-        }
-
-        String output = "";
-
-        if (pickedMenuContent.size() == 1) {
-            output = pickedMenuContent.get(0).getLib10();
         }
 
         if (output != null && !output.isEmpty()) {
@@ -161,8 +136,6 @@ public class UssdService {
                 case AppString.OPE -> {
                     var countries = getCountries();
                     var index = Integer.parseInt(userInput);
-                    log.info(":::::::::::: countries :::::::::::: " + countries);
-                    log.info(":::::::::::: index :::::::::::: " + index);
                     session.setCountry(countries.get(index - 1).getLib1());
                     yield formatEntries(getOperatorsByIndex(index, countries));
                 }
@@ -177,6 +150,30 @@ public class UssdService {
         sessionRepo.save(session);
 
         return response;
+    }
+
+
+    public HashMap<String, Object> goPrevMenu(String currentLevel, UserSession session) {
+        var currentMenus = nomenclatureRepo.findTabcdAndLevel(Menu.Tabcd, currentLevel);
+
+        log.info(":::::::::::: currentMenus :::::::::::: " + currentMenus);
+
+        if (currentMenus == null || currentMenus.isEmpty()) {
+            log.info(":::::::::::: NO MENU FOUND :::::::::::: ");
+
+            var response = new HashMap<String, Object>();
+            response.put("message", "Picked Menu Not Found.");
+            response.put("command", 1);
+            return response;
+        }
+
+        var prevLevel = currentMenus.get(0).getLib6();
+        var res = getMenuItems(prevLevel);
+
+        session.setPos(currentMenus.get(0).getLib6());
+        sessionRepo.save(session);
+
+        return res;
     }
 
     public List<Nomenclature> getCountries() {
@@ -287,8 +284,19 @@ public class UssdService {
         }
     }
 
+    public String constructMessage(TransferInfo info, String amount, String wallet) {
+        var str = "";
 
-    public String getTransferDetail(String amount, String wallet) {
+        if (info.can) {
+            str = "You are about to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
+        } else {
+            str = info.reason + " to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
+        }
+
+        return str;
+    }
+
+    public TransferInfo getTransferDetail(String amount, String wallet) {
         var body = new HashMap<String, Object>();
 
         body.put("wallet", wallet);
@@ -300,20 +308,11 @@ public class UssdService {
 
         if (result.getStatus() == 200) {
             var info = gson.fromJson(result.getBody().toString(), TransferInfo.class);
-            System.out.println("::::::::: info  :::::::::::: " + info);
+            System.out.println("::::::::: TransferInfo  :::::::::::: " + info);
 
-            var str = "";
-
-            if (info.can) {
-                str = "You are about to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
-            } else {
-                str = info.reason + " to transfer " + amount + " to " + wallet + "-" + info.fullName + ". Fees: " + info.fees;
-            }
-            System.out.println("::: STR :::" + str);
-
-            return str;
-        } else {
-            return "";
+            return info;
         }
+
+        return null;
     }
 }
